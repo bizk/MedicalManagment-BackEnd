@@ -1,0 +1,19 @@
+{
+  "name": "medicalmanagment-backend",
+  "version": "1.0.0",
+  "description": "This is the backend of the react native project of a medical managment application running on NodeJS with Sequelize.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bizk/MedicalManagment-BackEnd.git"
+  },
+  "author": "Carlos Santiago Yanzon (Bizk)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bizk/MedicalManagment-BackEnd/issues"
+  },
+  "homepage": "https://github.com/bizk/MedicalManagment-BackEnd#readme"
+}
