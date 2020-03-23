@@ -2,9 +2,10 @@
   "name": "medicalmanagment-backend",
   "version": "1.0.0",
   "description": "This is the backend of the react native project of a medical managment application running on NodeJS with Sequelize.",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,15 @@
   "bugs": {
     "url": "https://github.com/bizk/MedicalManagment-BackEnd/issues"
   },
-  "homepage": "https://github.com/bizk/MedicalManagment-BackEnd#readme"
+  "homepage": "https://github.com/bizk/MedicalManagment-BackEnd#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mysql2": "^2.1.0",
+    "sequelize": "^5.21.5",
+    "uuid": "^7.0.2"
+  }
 }
