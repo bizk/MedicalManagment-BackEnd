@@ -29,16 +29,5 @@ module.exports = (sequelize, DataTypes) => {
             allowNull: false
         }
     }, {});
-    People.associate = function(models){
-        // People.belongsTo(models.Speciality, {
-        //     foreignKey: 'specialityId',
-        //     as: 'speciality'
-        // });
-
-        // People.belongsToMany(models.WaitList, {
-        //     foreignKey: 'waitListId',
-        //     as: 'waitLists'
-        // })
-    };
     return People;
 }

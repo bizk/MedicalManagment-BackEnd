@@ -1,18 +1,14 @@
-module.exports = (sequelize, Sequelize) => {
+const uuid = require('uuid/v4');
+module.exports = (sequelize, DataTypes) => {
     const speciality = sequelize.define('speciality',{
+        specialityId: {
+            primaryKey: true,
+            type: DataTypes.UUID,
+            defaultValue: (uuid()),
+        },
         tpye: {
-            type: Sequelize.STRING
+            type: DataTypes.STRING
         },
     });
-    speciality.associate = function(models) {
-        speciality.belongsToMany(models.Person, {
-            foreignKey: 'userUUID',
-            as: 'medic'
-        });
-        speciality.belongsTo(models.WaitList, {
-           foreignKey: 'waitListId',
-           as: 'waitList'
-        });
-    };
     return speciality;
 }

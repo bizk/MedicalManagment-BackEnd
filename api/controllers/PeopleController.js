@@ -1,5 +1,4 @@
-const { People, User } = require('../models');
-
+const { People, Specialities, User,MedicSpeciality } = require('../models');
 const uuid = require('uuid/v4');
 
 module.exports = {
@@ -17,7 +16,13 @@ module.exports = {
     },
 
     getAll(req, res) {
-        People.findAll()
+        People.findAll({
+            include: [
+                {
+                    model: User
+                }
+            ]
+        })
         .then(data => res.status(200).send(data))
         .catch(e => res.status(500))
     },
@@ -27,9 +32,12 @@ module.exports = {
             where: {
                 peopleUUID: req.body.peopleUUID
             },
-            include: {
-                model: User
-            }
+            include:[
+                {
+                    model: Specialities,
+                    as: "specialities"
+                }
+            ]
         }).then(data =>{
             res.status(200).send(data);
         })
@@ -39,8 +47,15 @@ module.exports = {
     getAllMedics(req, res) {
         People.findAll({
             where: {
-                role: "Médico"
-            }
+                role: "Médic"
+            },
+            include:[
+                {
+                    through: MedicSpeciality,
+                    model: Specialities,
+                    as: "specialities"
+                }
+            ]
         })
         .then(data => res.status(200).send(data))
         .catch(e => res.status(500))

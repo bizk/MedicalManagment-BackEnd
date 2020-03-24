@@ -23,9 +23,13 @@ var People = require('./People.js')(sequelize, Sequelize);
 var User = require('./User.js')(sequelize, Sequelize);
 var Specialities = require('./speciality.model')(sequelize, Sequelize);
 
-var Booking = require('./Booking.model')(sequelize,Sequelize);
-User.hasOne(People, {foreignKey: 'userUUID'});
+var MedicSpeciality = require('./MedicSpecialitys')(sequelize,Sequelize);
+People.belongsToMany(Specialities, {through: MedicSpeciality,as: 'specialities'});
+Specialities.belongsToMany(People, {through: MedicSpeciality, as: 'medics'});
 
+var Booking = require('./Booking.model')(sequelize,Sequelize);
+
+User.hasOne(People, {foreignKey: 'userUUID'});
 People.belongsTo(User, {foreignKey: 'peopleUUID'});
 // People.hasMany(Booking, {foreignKey: 'bookingsId'});
 
