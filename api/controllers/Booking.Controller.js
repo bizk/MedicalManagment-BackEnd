@@ -1,15 +1,20 @@
-const { Booking, People } = require('../models');
+const { Booking, Patient, Specialities } = require('../models');
 
 module.exports = {
     createBooking(req, res) {
-        var patient = People.findOne({
+        var patient = Patient.findOne({
             where: {
-                peopleUUID: req.body.peopleUUID
+                patientPeopleUUID: req.body.peopleUUID
             }
         });
         var medic = People.findOne({
             where: {
-                peopleUUID: req.body.peopleUUID
+                medicPeopleUUID: req.body.peopleUUID
+            }
+        });
+        var speciality = Specialities.findOne({
+            where: {
+                specialityid:  req.body.specialityId
             }
         })
         Booking.create({
@@ -25,25 +30,39 @@ module.exports = {
                 }, {
                     include: medic,
                     as: 'medic'
+                }, {
+                    model: speciality,
+                    as: 'speciality'
                 }
             ]
         })
     },
     getAll(req, res) {
-        Booking.findAll({}).then(data=>res.status(200).send(data)).catch(e=>console.log(e));
+        Booking.findAll({
+            include: [
+                {
+                    model: Patient,
+                    as: 'patient'
+                },{
+                    model: People,
+                    as: 'medic'
+                }
+            ]
+        }).then(data=>res.status(200).send(data)).catch(e=>console.log(e));
     },
     confirmBooking(req, res) {
-        Booking.update({
-            where:{ id: req.body.bookingId }
-        }, {status: "confirmed"})
-        .then(data => data.status(200).send(data))
+        Booking.update({status: "confirmed"},{ where:{ bookingId: req.body.bookingId }})
+        .then(data => res.status(200).send(data))
         .catch(e => console.log(e));
     },
     cancelBooking(req, res) {
-        Booking.update({
-            where:{ id: req.body.bookingId }
-        }, {status: "cancelled"})
-        .then(data => data.status(200).send(data))
+        Booking.update({status: "canceled"},{ where:{ bookingId: req.body.bookingId }})
+        .then(data => res.status(200).send(data))
+        .catch(e => console.log(e));
+    },
+    cancelBookingByMedicCentre(req, res) {
+        Booking.update({status: "canceledMedicCentre"},{ where:{ bookingId: req.body.bookingId }})
+        .then(data => res.status(200).send(data))
         .catch(e => console.log(e));
     }
 }

@@ -19,26 +19,35 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-var People = require('./People.js')(sequelize, Sequelize);
 var User = require('./User.js')(sequelize, Sequelize);
+var People = require('./People.model.js') (sequelize,Sequelize);
+
+User.hasOne(People, {foreignKey: 'userUUID'});
+People.belongsTo(User, {foreignKey: 'userUUID'});
+
+var Role = require('./Role.Model.js') (sequelize, Sequelize);
+
+People.belongsTo(Role);
+Role.hasMany(People);
+
 var Specialities = require('./speciality.model')(sequelize, Sequelize);
 
-var MedicSpeciality = require('./MedicSpecialitys')(sequelize,Sequelize);
-People.belongsToMany(Specialities, {through: MedicSpeciality,as: 'specialities'});
-Specialities.belongsToMany(People, {through: MedicSpeciality, as: 'medics'});
+
+// var MedicSpeciality = require('./MedicSpecialitys')(sequelize,Sequelize);
+// Patient.belongsToMany(Specialities, {through: MedicSpeciality,as: 'specialities'});
+// Specialities.belongsToMany(Patient, {through: MedicSpeciality, as: 'medics'});
 
 var Booking = require('./Booking.model')(sequelize,Sequelize);
 
-User.hasOne(People, {foreignKey: 'userUUID'});
-People.belongsTo(User, {foreignKey: 'peopleUUID'});
-// People.hasMany(Booking, {foreignKey: 'bookingsId'});
+// Patient.hasMany(Booking);
+// Booking.belongsTo(Patient, { as: 'patient'});
+// Booking.belongsTo(Patient, { as: 'medic'});
 
-// Booking.belongsTo(People, {foreignKey: 'peopleUUID', as: 'Paciente'});
-// Booking.belongsTo(People, {foreignKey: 'peopleUUID', as: 'Medic'});
 db.User = User;
 db.People = People;
 db.Specialities = Specialities;
-// db.Booking = Booking;
+db.Booking = Booking;
+db.Role = Role;
 // db.WaitList = require('./WaitList.model')(sequelize,Sequelize);
 
 module.exports = db;

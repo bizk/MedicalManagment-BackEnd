@@ -1,4 +1,4 @@
-const {Specialities, People} = require('../models');
+const {Specialities, Medic} = require('../models');
 module.exports = {
     createSpeciality(req, res) {
         Specialities.create({
@@ -7,22 +7,6 @@ module.exports = {
         .catch(e => console.log(e.message));
     },
 
-    addMedic(req, res) {
-        var speciality =  Specialities.findOne({
-            where: req.body.speciality
-        })
-        People.findOne({
-            where: {
-                peopleUUID: req.body.peopleUUID,
-                role: "medic"
-            }
-        }).then(medic => {
-           medic.addSpeciality(speciality);
-           speciality.addMedic(medic);
-           res.status(200).send(medic); 
-        })
-        .catch(e => console.log(e));
-    },
 
     getAll(req, res) {
         Specialities.findAll({

@@ -7,7 +7,7 @@ module.exports = function(app) {
 
     app.post("/users/loginUser", (req, res) => {userController.loginUser(req, res)});
 
-    app.get("/users/getUsers", function(req, res) {
+    app.get("/users/getAll", function(req, res) {
         userController.getAll(req, res);
     });
 }

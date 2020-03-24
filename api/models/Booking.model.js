@@ -1,16 +1,22 @@
-module.exports = (sequelize, Sequelize) => {
+const uuid = require('uuid/v4');
+module.exports = (sequelize, DataTypes) => {
     const booking = sequelize.define('booking',{
+        bookingId: {
+            primaryKey: true,
+            type: DataTypes.UUID,
+            defaultValue: (uuid()),
+        },
         day: {
-            type: Sequelize.DATEONLY
+            type: DataTypes.DATEONLY
         },
         time_start: {
-            type: Sequelize.TIME
+            type: DataTypes.TIME
         },
         time_end: {
-            type: Sequelize.TIME
+            type: DataTypes.TIME
         },
         status: {
-            type: Sequelize.STRING
+            type: DataTypes.STRING
         }
     });
     return booking;
