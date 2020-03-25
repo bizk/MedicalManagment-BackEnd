@@ -1,4 +1,4 @@
-const { People, Booking, Specialities, User,MedicSpeciality } = require('../models');
+const { People, Booking, Specialities, User,Role } = require('../models');
 const uuid = require('uuid/v4');
 
 module.exports = {
@@ -25,6 +25,19 @@ module.exports = {
                 //     model: Booking
                 // }
             ]
+        })
+        .then(data => res.status(200).send(data))
+        .catch(e => res.status(500))
+    },
+
+    getAllMedics(req, res) {
+        People.findAll({
+            include: [{
+                model: Role,       
+                where: {
+                    role: 'medic'
+                }        
+            }],
         })
         .then(data => res.status(200).send(data))
         .catch(e => res.status(500))

@@ -1,4 +1,4 @@
-const {Specialities, Medic} = require('../models');
+const {Specialities, People} = require('../models');
 module.exports = {
     createSpeciality(req, res) {
         Specialities.create({

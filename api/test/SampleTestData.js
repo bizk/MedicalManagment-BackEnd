@@ -10,6 +10,8 @@ module.exports = {
         this.createUsers();
         this.createPeople();
         this.createRoles();
+        this.createSpecialities();
+        this.createBookings();
     },
 
     createUsers() {
@@ -29,6 +31,39 @@ module.exports = {
             {userUUID: 'm-1', name: 'Jesus', sureName: 'Powell', dni: '4188701215'},
             {userUUID: 'm-2', name: 'Hannah', sureName: 'Clayton', dni: '3072954121'}
         ])
+    },
+
+    createBookings() {
+        Booking.bulkCreate([
+            {bookingId: '1', day: '10/04/2020', time_start:'14:30', time_end:"15:30", status: ''},
+            {bookingId: '2', day: '04/15/2020', time_start:'14:30', time_end:"15:30", status: ''},
+            {bookingId: '3', day: '04/30/2020', time_start:'14:30', time_end:"15:30", status: ''},
+            {bookingId: '4', day: '04/04/2020', time_start:'15:30', time_end:"16:30", status: ''},
+            {bookingId: '5', day: '10/10/2020', time_start:'10:30', time_end:"11:30", status: 'canceled'},
+            {bookingId: '6', day: '4/16/2020', time_start:'20:30', time_end:"22:30", status: 'canceled'},
+        ]).then(() =>{
+            let med1 = People.findOne({where: {userUUID: 'm-1'}});
+            let med2 = People.findOne({where: {userUUID: 'm-2'}});
+            let pat1 = People.findOne({where: {userUUID: 'p-1'}});
+            let pat2 = People.findOne({where: {userUUID: 'p-2'}});
+            
+            let booking_1 = Booking.findOne({where: {bookingId: '1'}});
+            let booking_2 = Booking.findOne({where: {bookingId: '2'}});
+            let booking_3 = Booking.findOne({where: {bookingId: '3'}});
+            let booking_4 = Booking.findOne({where: {bookingId: '4'}});
+            let booking_5 = Booking.findOne({where: {bookingId: '5'}});
+
+            let spec_1 = Specialities.findOne({where: {specialityId: '1'}})
+            createBooking(booking_1, pat1, med1, spec_1);
+        });
+
+        function createBooking(booking, patient, medic, spec) {
+            Sequelize.Promise.all([booking, patient, medic, spec]).spread((Booking, Patient, Medic, Spec) => {
+                Booking.setPatient(Patient);
+                Booking.setMedic(Medic);
+                Booking.setSpeciality(Spec);
+            });
+        }
     },
 
     createRoles() {
@@ -58,51 +93,25 @@ module.exports = {
             {specialityId: '1', type: "Hearth Disease"},
             {specialityId: '2', type: "Pulmonar Disease"},
             {specialityId: '3', type: "Bone Disease"},
-        ])
+        ]).then(() => {
+            var spec_1 = Specialities.findOne({where: {specialityId: '1'}});
+            var spec_2 = Specialities.findOne({where: {specialityId: '2'}});
+            var spec_3 = Specialities.findOne({where: {specialityId: '3'}});
+            let med1 = People.findOne({where: {userUUID: 'm-1'}})
+            let med2 = People.findOne({where: {userUUID: 'm-2'}})
+
+            Sequelize.Promise.all([spec_1, med1]).spread((Spec, Medic_1) => {
+                return Spec.addMedic([Medic_1]);
+            });
+
+            Sequelize.Promise.all([spec_2, med1, med2]).spread((Spec, Medic_1, Medic_2) => {
+                return Spec.addMedic([Medic_1, Medic_2]);
+            });
+
+            
+            Sequelize.Promise.all([spec_3, med2]).spread((Spec, Medic) => {
+                return Spec.addMedic([Medic]);
+            });
+        });
     },
-
-    addMedicToSpecialities() {
-        let medic_1 = People.findOne({where: {peopleUUID: 'm-1'}});
-        let medic_2 = People.findOne({where: {peopleUUID: 'm-2'}});
-        var spec_1 = Specialities.findOne({where: {specialityId: '1'}});
-        var spec_2 = Specialities.findOne({where: {specialityId: '2'}});
-        var spec_3 = Specialities.findOne({where: {specialityId: '3'}});
-
-        Promise.all([medic_1, medic_2])
-        .then(response => {
-            spec_1.then(spec => { spec.addMedic(response[0], {}) });
-            spec_2.then(spec => { spec.addMedic(response[0], {}) });
-            spec_2.then(spec => { spec.addMedic(response[1], {}) });
-            spec_3.then(spec => {spec.addMedic(response[1], {}) });
-        })
-    },
-
-    createBookings() {
-        console.log("!!!!!!!!!!!!!!!!!!!")
-        Booking.bulkCreate([
-            {bookingId: '1',day: '1/4/2020', time_start: '14:00', time_end: '15:00', status: ''},
-            {bookingId: '2',day: '1/4/2020', time_start: '15:00', time_end: '16:00', status: ''},
-            {bookingId: '3',day: '3/4/2020', time_start: '14:00', time_end: '15:00', status: ''}
-        ]);
-        
-        var m_1 = People.findOne({where: {peopleUUID: 'm-1'}});
-        var m_2 = People.findOne({where: {peopleUUID: 'm-2'}});
-        var p_1 = People.findOne({where: {peopleUUID: 'p-1'}});
-        var p_2 = People.findOne({where: {peopleUUID: 'p-2'}});
-        
-        var b_1 = Booking.findOne({where: {bookingId: '1'}});
-
-        Promise.all([b_1, p_1])
-        .then(response => {
-            response[0].addMedic(m_1);
-        })
-        // var medic_1 = People.findOne({where: {peopleUUID: 'm-1'}});
-        // Promise.all([medic_1, medic_2])
-        // .then(response => {
-        //     spec_1.then(spec => { spec.addMedic(response[0], {}) });
-        //     spec_2.then(spec => { spec.addMedic(response[0], {}) });
-        //     spec_2.then(spec => { spec.addMedic(response[1], {}) });
-        //     spec_3.then(spec => {spec.addMedic(response[1], {}) });
-        // })
-    }
 }

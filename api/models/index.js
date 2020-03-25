@@ -32,16 +32,17 @@ Role.hasMany(People);
 
 var Specialities = require('./speciality.model')(sequelize, Sequelize);
 
-
-// var MedicSpeciality = require('./MedicSpecialitys')(sequelize,Sequelize);
-// Patient.belongsToMany(Specialities, {through: MedicSpeciality,as: 'specialities'});
-// Specialities.belongsToMany(Patient, {through: MedicSpeciality, as: 'medics'});
+var MedicSpeciality = require('./MedicSpecialitys')(sequelize,Sequelize);
+People.belongsToMany(Specialities, {through: MedicSpeciality,as: 'specialities'});
+Specialities.belongsToMany(People, {through: MedicSpeciality, as: 'medics'});
 
 var Booking = require('./Booking.model')(sequelize,Sequelize);
 
-// Patient.hasMany(Booking);
-// Booking.belongsTo(Patient, { as: 'patient'});
-// Booking.belongsTo(Patient, { as: 'medic'});
+People.hasMany(Booking, { as: 'bookings'});
+Booking.belongsTo(People, { foreignKey:'patientId', as: 'patient'});
+Booking.belongsTo(People, { foreignKey:'medicId', as: 'medic'});
+Specialities.hasMany(Booking, { as: 'bookings'});
+Booking.belongsTo(Specialities)
 
 db.User = User;
 db.People = People;

@@ -1,15 +1,15 @@
-const { Booking, Patient, Specialities } = require('../models');
+const { Booking, People, Specialities } = require('../models');
 
 module.exports = {
     createBooking(req, res) {
-        var patient = Patient.findOne({
+        var patient = People.findOne({
             where: {
-                patientPeopleUUID: req.body.peopleUUID
+                patientPeopleUUID: req.body.patientUUID
             }
         });
         var medic = People.findOne({
             where: {
-                medicPeopleUUID: req.body.peopleUUID
+                medicPeopleUUID: req.body.medicUUID
             }
         });
         var speciality = Specialities.findOne({
@@ -25,10 +25,10 @@ module.exports = {
         }, {
             include: [
                 {
-                    model: patient,
+                    model: People,
                     as: 'patient'
                 }, {
-                    include: medic,
+                    include: People,
                     as: 'medic'
                 }, {
                     model: speciality,
@@ -41,9 +41,14 @@ module.exports = {
         Booking.findAll({
             include: [
                 {
-                    model: Patient,
+                    model: Specialities,
+                    as: 'speciality'
+                },
+                {
+                    model: People,
                     as: 'patient'
-                },{
+                },
+                {
                     model: People,
                     as: 'medic'
                 }
