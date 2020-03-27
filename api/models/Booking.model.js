@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
         bookingId: {
             primaryKey: true,
             type: DataTypes.UUID,
-            defaultValue: (uuid()),
+            defaultValue: (uuid),
         },
         day: {
             type: DataTypes.DATEONLY

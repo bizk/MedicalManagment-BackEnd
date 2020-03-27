@@ -12,6 +12,7 @@ require("./api/routes/Role.Routes.js")(app);
 require("./api/routes/UserRoutes.js")(app);
 require("./api/routes/Speciality.Routes.js")(app);
 require("./api/routes/Booking.Routes")(app);
+require("./api/routes/MedWorkHours.Routes")(app);
 
 const db = require("./api/models");
 

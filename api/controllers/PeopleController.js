@@ -1,4 +1,4 @@
-const { People, Booking, Specialities, User,Role } = require('../models');
+const { People, Booking, Specialities, User,Role, MedicWorkHours } = require('../models');
 const uuid = require('uuid/v4');
 
 module.exports = {
@@ -34,10 +34,11 @@ module.exports = {
         People.findAll({
             include: [{
                 model: Role,       
-                where: {
-                    role: 'medic'
-                }        
-            }],
+                where: { role: 'medic' }        
+            }, {
+                model: MedicWorkHours,
+            }
+            ],
         })
         .then(data => res.status(200).send(data))
         .catch(e => res.status(500))

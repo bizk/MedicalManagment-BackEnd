@@ -1,4 +1,4 @@
-const { User, People,Role, Specialities, Booking } = require('../models');
+const { User, People,Role, Specialities, Booking, MedicWorkHours } = require('../models');
 
 const dbConfig = require('../config/db.config.js');
 
@@ -12,6 +12,7 @@ module.exports = {
         this.createRoles();
         this.createSpecialities();
         this.createBookings();
+        this.createMedWorkHS();
     },
 
     createUsers() {
@@ -33,9 +34,41 @@ module.exports = {
         ])
     },
 
+    createMedWorkHS() {
+        MedicWorkHours.bulkCreate([
+            {id: '1', day:"03/26/2020", startHour: "08:00", finishHour: "20:00"},
+            {id: '2', day:"03/26/2020", startHour: "08:00", finishHour: "20:00"},
+            {id: '3', day:"03/26/2020", startHour: "08:00", finishHour: "20:00"},
+            {id: '4',day:"03/26/2020", startHour: "10:30", finishHour: "15:45"}
+        ]).then(() => {
+            let med1 = People.findOne({where: {userUUID: 'm-1'}});
+            let med2 = People.findOne({where: {userUUID: 'm-2'}});
+            let spec_1 = Specialities.findOne({where: {specialityId: '1'}});
+            let spec_2 = Specialities.findOne({where: {specialityId: '2'}});
+            let spec_3 = Specialities.findOne({where: {specialityId: '3'}});
+            
+            let medWorkHs1 = MedicWorkHours.findOne({where: {id: '1'}});
+            let medWorkHs1_2 = MedicWorkHours.findOne({where: {id: '2'}});
+            let medWorkHs2 = MedicWorkHours.findOne({where: {id: '3'}});
+            let medWorkHs2_2 = MedicWorkHours.findOne({where: {id: '4'}});
+            createWorkHs(medWorkHs1, med1, spec_1);
+            createWorkHs(medWorkHs1_2, med1, spec_2);
+            createWorkHs(medWorkHs2, med2, spec_2);
+            createWorkHs(medWorkHs2_2, med2, spec_3);
+
+        });
+
+        function createWorkHs(wkhs, med, spec) {
+            Sequelize.Promise.all([wkhs, med, spec]).spread((WkHs, Medic, Spec) => {
+                Medic.addMedicWorkingHours(WkHs);
+                Spec.addMedicWorkingHours(WkHs);
+            });
+        }
+    },
+
     createBookings() {
         Booking.bulkCreate([
-            {bookingId: '1', day: '10/04/2020', time_start:'14:30', time_end:"15:30", status: ''},
+            {bookingId: '1', day: '03/26/2020', time_start:'09:50', time_end:"15:30", status: ''},
             {bookingId: '2', day: '04/15/2020', time_start:'14:30', time_end:"15:30", status: ''},
             {bookingId: '3', day: '04/30/2020', time_start:'14:30', time_end:"15:30", status: ''},
             {bookingId: '4', day: '04/04/2020', time_start:'15:30', time_end:"16:30", status: ''},
@@ -54,7 +87,14 @@ module.exports = {
             let booking_5 = Booking.findOne({where: {bookingId: '5'}});
 
             let spec_1 = Specialities.findOne({where: {specialityId: '1'}})
+            let spec_2 = Specialities.findOne({where: {specialityId: '2'}})
+            let spec_3 = Specialities.findOne({where: {specialityId: '3'}})
+            
             createBooking(booking_1, pat1, med1, spec_1);
+            createBooking(booking_2, pat2, med1, spec_1);
+            createBooking(booking_3, pat1, med2, spec_2);
+            createBooking(booking_1, pat2, med1, spec_3);
+
         });
 
         function createBooking(booking, patient, medic, spec) {

@@ -44,11 +44,19 @@ Booking.belongsTo(People, { foreignKey:'medicId', as: 'medic'});
 Specialities.hasMany(Booking, { as: 'bookings'});
 Booking.belongsTo(Specialities)
 
+let MedicWorkHours = require('./MedicWorkHours.Model.js')(sequelize, Sequelize);
+People.hasMany(MedicWorkHours);
+MedicWorkHours.belongsTo(People);
+Specialities.hasMany(MedicWorkHours);
+MedicWorkHours.belongsTo(Specialities);
+
+
 db.User = User;
 db.People = People;
 db.Specialities = Specialities;
 db.Booking = Booking;
 db.Role = Role;
+db.MedicWorkHours = MedicWorkHours;
 // db.WaitList = require('./WaitList.model')(sequelize,Sequelize);
 
 module.exports = db;
