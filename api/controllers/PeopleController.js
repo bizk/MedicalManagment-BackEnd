@@ -1,23 +1,45 @@
-const { People, User } = require('../models');
-
+const { People, Booking, Specialities, User,Role, MedicWorkHours } = require('../models');
 const uuid = require('uuid/v4');
 
 module.exports = {
-    createPerson(req, res) {
+    createPeople(req, res) {
         People.create({
-            peopleUUID: req.body.peopleUUID,
+            userUUID: req.body.userUUID,
             name: req.body.name,
             sureName: req.body.sureName,
-            // dateOfBirth: req.body.dateOfBirth,
+            dateOfBirth: req.body.dateOfBirth,
             dni: req.body.dni,
-            role: req.body.role
         })
         .then(data => {console.log(data); res.status(200).send(data)})
         .catch(e => res.status(500));
     },
 
     getAll(req, res) {
-        People.findAll()
+        console.log("!")
+        People.findAll({
+            include: [
+                {
+                    model: User
+                }
+                // ,{
+                //     model: Booking
+                // }
+            ]
+        })
+        .then(data => res.status(200).send(data))
+        .catch(e => res.status(500))
+    },
+
+    getAllMedics(req, res) {
+        People.findAll({
+            include: [{
+                model: Role,       
+                where: { role: 'medic' }        
+            }, {
+                model: MedicWorkHours,
+            }
+            ],
+        })
         .then(data => res.status(200).send(data))
         .catch(e => res.status(500))
     },
@@ -25,34 +47,17 @@ module.exports = {
     getWithUUID(req, res) {
         People.findOne({
             where: {
-                peopleUUID: req.body.peopleUUID
+                userUUID: req.body.userUUID
             },
-            include: {
-                model: User
-            }
+            include:[
+                {
+                    model: Specialities,
+                    as: "specialities"
+                }
+            ]
         }).then(data =>{
             res.status(200).send(data);
         })
         .catch(e => console.log(e.message));
     },
-
-    getAllMedics(req, res) {
-        People.findAll({
-            where: {
-                role: "Médico"
-            }
-        })
-        .then(data => res.status(200).send(data))
-        .catch(e => res.status(500))
-    },
-    
-    getAllPatients(req, res) {
-        People.findAll({
-            where: {
-                role: "Paciente"
-            }
-        })
-        .then(data => res.status(200).send(data))
-        .catch(e => res.status(500))
-    }
 };
