@@ -6,7 +6,7 @@ Since we will run this project over local this app will run over `localhost:8080
 
 Usamos el formato : `URLEncoded from data`
 
-###Usuarios
+### Usuarios 
 **Registrar usuario**
 > POST: /users/registerUser 
 
@@ -24,7 +24,7 @@ Consume en el body:
 ------------
 
 
-###Personas
+### Personas
 Una persona es un modelo general del cual puede tener el rol de paciente o de medico
 
 **Crear persona**
@@ -51,7 +51,7 @@ Nos devuelve en formato JSON a todas las personas con rol 'MEDICO'
 ------------
 
 
-###Roles
+### Roles
 
 Un rol es lo que una persona tiene por ser medico o paciente
 
@@ -68,7 +68,7 @@ Consume:
 ------------
 
 
-###Especialidad
+### Especialidad
 Una especialidad es un modelo que tiene un medico o un turno
 
 **Crear especialidad**
