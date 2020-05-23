@@ -1,4 +1,6 @@
 const { User, People,Role, Specialities, Booking, MedicWorkHours } = require('../models');
+var moment = require('moment');
+var localDay = moment().format("YYYY-MM-DD");
 
 const dbConfig = require('../config/db.config.js');
 
@@ -68,12 +70,12 @@ module.exports = {
 
     createBookings() {
         Booking.bulkCreate([
-            {bookingId: '1', day: '03/26/2020', time_start:'09:50', time_end:"15:30", status: ''},
-            {bookingId: '2', day: '04/15/2020', time_start:'14:30', time_end:"15:30", status: ''},
-            {bookingId: '3', day: '04/30/2020', time_start:'14:30', time_end:"15:30", status: ''},
-            {bookingId: '4', day: '04/04/2020', time_start:'15:30', time_end:"16:30", status: ''},
-            {bookingId: '5', day: '10/10/2020', time_start:'10:30', time_end:"11:30", status: 'canceled'},
-            {bookingId: '6', day: '4/16/2020', time_start:'20:30', time_end:"22:30", status: 'canceled'},
+            {bookingId: '1', day: localDay, time_start:'09:50', time_end:"15:30", status: ''},
+            {bookingId: '2', day: localDay, time_start:'14:30', time_end:"15:30", status: ''},
+            {bookingId: '3', day: moment(localDay).add(2, 'day'), time_start:'14:30', time_end:"15:30", status: ''},
+            // {bookingId: '4', day: moment(localDay).add(1, 'M'), time_start:'15:30', time_end:"16:30", status: ''},
+            // {bookingId: '5', day: '10/10/2020', time_start:'10:30', time_end:"11:30", status: 'canceled'},
+            // {bookingId: '6', day: '4/16/2020', time_start:'20:30', time_end:"22:30", status: 'canceled'},
         ]).then(() =>{
             let med1 = People.findOne({where: {userUUID: 'm-1'}});
             let med2 = People.findOne({where: {userUUID: 'm-2'}});

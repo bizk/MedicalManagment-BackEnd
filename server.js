@@ -1,11 +1,16 @@
 var express = require('express');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 
 var app = express();
 var port = process.env.PORT || 8080;
 
+app.use(bodyParser.urlencoded(
+  {
+      extended: true
+  }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors())
 
 require("./api/routes/People.Routes.js")(app);
 require("./api/routes/Role.Routes.js")(app);
@@ -26,7 +31,6 @@ db.sequelize.sync({ force: forceSync }).then(() => {
     }
   });
   
-
 var server = app.listen(port, function() {
     console.log("Running on port %s...",  server.address().port);
 });
