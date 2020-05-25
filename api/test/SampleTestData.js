@@ -38,10 +38,11 @@ module.exports = {
 
     createMedWorkHS() {
         MedicWorkHours.bulkCreate([
-            {id: '1', day:"03/26/2020", startHour: "08:00", finishHour: "20:00"},
-            {id: '2', day:"03/26/2020", startHour: "08:00", finishHour: "20:00"},
-            {id: '3', day:"03/26/2020", startHour: "08:00", finishHour: "20:00"},
-            {id: '4',day:"03/26/2020", startHour: "10:30", finishHour: "15:45"}
+            {id: '1', day:moment().add(1,'day'), startHour: "08:00", finishHour: "20:00"},
+            {id: '2', day:moment().add(1,'day'), startHour: "08:00", finishHour: "20:00"},
+            {id: '3', day:moment().add(1,'day'), startHour: "08:00", finishHour: "20:00"},
+            {id: '4',day:moment().add(1,'day'), startHour: "10:30", finishHour: "15:45"},
+            {id: '5',day:moment().add(1,'day'), startHour: "10:30", finishHour: "15:45"},
         ]).then(() => {
             let med1 = People.findOne({where: {userUUID: 'm-1'}});
             let med2 = People.findOne({where: {userUUID: 'm-2'}});

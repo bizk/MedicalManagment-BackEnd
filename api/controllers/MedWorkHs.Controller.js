@@ -11,5 +11,33 @@ module.exports = {
                 }
             ]
         }).then(data => res.status(200).send(data)).catch(e => console.log(e));
-    }
+    },
+
+    getWorkHours_specDate(req, res) {
+        MedicWorkHours.findAll({
+            include: [
+                {
+                    model: People,
+                }
+            ],
+            where: {
+                day: req.body.date,
+                specialitySpecialityId: req.body.speciality
+            }
+        })
+        .then(data => res.status(200).send(data))
+        .catch(e => console.log(e));
+    },
+
+    getWorkHours_specDateMedic(req, res) {
+        MedicWorkHours.findAll({
+            where: {
+                day: req.body.date,
+                specialitySpecialityId: req.body.speciality,
+                personId: req.body.medicId
+            }
+        })
+        .then(data => res.status(200).send(data))
+        .catch(e => console.log(e));
+    },
 }
