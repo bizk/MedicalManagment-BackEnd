@@ -19,9 +19,9 @@ module.exports = {
 
     createUsers() {
         User.bulkCreate([
-            {userUUID: 'p-1', mail: 'testMail@gmail.com', password: "password"},
+            {userUUID: 'p-1', mail: 'paciente_1', password: "abc123"},
             {userUUID: 'p-2', mail: 'ziso@ewek.uz', password: "olujijev"},
-            {userUUID: 'm-1',mail: 'soovunel@fewiz.uk', password: "ivoirwu1p"},
+            {userUUID: 'm-1',mail: 'medico_1', password: "abc123"},
             {userUUID: 'm-2',mail: 'temaf@defo.id', password: "haffobtu4f"},
             {userUUID: 'c-1',mail: 'ohri@mot.fi', password: 'powhazgimege'}
         ])

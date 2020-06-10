@@ -1,0 +1,645 @@
+swagger: "2.0"
+info:
+  description: "Documentacion de la API Rest para la materia Aplicaciones Distribuidas de la Universidad Argentina de la Empresa (UADE), realizado en swagger/OpenAPI 3."
+  version: "1.0.0"
+  title: "Medical managment Backend"
+  contact:
+    name: "Yanzon, Carlos Santiago"
+    email: "c.s.yanzon@gmail.com"
+    url: "https://www.linkedin.com/in/carlos-santiago-yanzon/"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "localhost:8080"
+#basePath: "/v2"
+tags:
+  - name: "User"
+    description: "Usuarios para login"
+  - name: "Especialidad"
+    description: "Especialidades de medicos."
+  - name: "Turno"
+    description: "Operaciones relacionadas a los turnos"
+  - name: "People"
+    description: "Informacion relacionada a los uuarios (por seguridad se manienen separadas)"
+  - name: "Horario"
+    description: "Informacion relacionada a los horarios de los medicos"
+schemes:
+  - "http"
+
+paths:
+
+  /booking/patient:
+    post:
+      tags:
+        - "Turno"
+      summary: "Obtener turnos de un paciente"
+      description: "Nos devuele todos los turnos de un paciente en los proximos dos meses"
+      operationId: "getAllBookingsPatient"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Turno"
+        "400":
+          description: "Error al obtener los turnos"
+  /booking/medic:
+    get:
+      tags:
+        - "Turno"
+      summary: "Obtener turnos de un medico"
+      description: "Nos devuele todos los turnos de un medic en los proximos dos meses"
+      operationId: "getAllBookingsMedic"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Turno"
+        "400":
+          description: "Error al obtener los turnos"
+  /booking:
+    post:
+      tags:
+        - "Turno"
+      summary: "Crear un turno"
+      description: "Crea un turno asociando un medico y un paciente."
+      operationId: "addBooking"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      produces:
+        - "application/xml"
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Posee la informacion necesaria para poder crear un turno."
+          required: true
+          schema:
+            $ref: "#/definitions/Turno"
+      responses:
+        "200":
+          description: "Se crea el turno con exito."
+        "300":
+          description: "El turno se intnteo crear fuera de los dos meses"
+        "400":
+          description: "Datos incorrectos."
+    delete:
+      tags:
+        - "Turno"
+      summary: "Cancelar un turno por centro medico"
+      description: "Cancela un turno asociando de un paciente por parte del centro medico"
+      operationId: "cancelBookingByMedicCentre"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Id del turno."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              bookingId:
+                type: "integer"
+                example: "1"
+      responses:
+        "200":
+          description: "Se cancela el turno con exito"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Se ha cancelado el turno con exito"
+        "400":
+          description: "Error al cancelrar el turno"
+  /booking/confirmBooking:
+    put:
+      tags:
+        - "Turno"
+      summary: "Confirmar un turno"
+      description: "Confirma un turno asociando de un paciente siempre que este se encuentre 12 hs antes."
+      operationId: "confirmBooking"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Id del turno."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              bookingId:
+                type: "integer"
+                example: "1"
+      responses:
+        "200":
+          description: "Se confirma el turno con exito"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Se ha el turno confirmado con exito"
+        "300":
+          description: "Se intenta confirmar el turno antes"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "No se puede confirmar un turno una hora antes"
+  /booking/cancelBooking:
+    put:
+      tags:
+        - "Turno"
+      summary: "Cancelar un turno"
+      description: "Cancela un turno asociando de un paciente siempre que este se encuentre 2 meses proximos a la fecha."
+      operationId: "cancelBooking"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Id del turno."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              bookingId:
+                type: "integer"
+                example: "1"
+      responses:
+        "200":
+          description: "Se cancela el turno con exito"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Se ha cancelado el turno con exito"
+        "300":
+          description: "Devuelve cuando se desea cancelar el turno 12 horas antes generara cargas adicionales"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "Cancelar el turno 12 horas antes generara cargas adicionales"
+        "301":
+          description: "El turno ha expirado (se desea cancelar un turno viejo)"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "El turno ha expirado"
+        "400":
+          description: "Error al cancelar el turno"
+
+  /test/booking:
+    get:
+      tags:
+        - "Turno"
+      summary: "Obtener todos los turnos"
+      description: "Nos devuele todos los turnos disponibles"
+      operationId: "getAllBookings"
+      consumes:
+        - "application/json"
+        - "application/xml"
+      produces:
+        - "application/xml"
+        - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Turno"
+        "400":
+          description: "Error al obtener los turnos"
+
+  /users:
+    post:
+      tags:
+        - "User"
+      summary: "Inicio de sesion"
+      description: "Inicio de sesion, y chequeo de credenciales."
+      operationId: "login"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Id del turno."
+          required: true
+          schema:
+            type: "object"
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: "Se loggea con exito"
+          schema:
+            type: "object"
+            properties:
+              message:
+                type: "string"
+                example: "???"
+        "300":
+          description: "Credenciales invalidas"
+        "400":
+          description: "Error al iniciar sesion"
+    get:
+      tags:
+        - "User"
+      summary: "get all usuarios"
+      description: "Nos devuele todos los usuarios disponibles"
+      operationId: "getAll"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "successful operation"
+          schema:
+            properties:
+              email:
+                type: "string"
+                example: "randomEmail@mail.com"
+              password:
+                type: "string"
+                example: "shhh!_es_un_secreto!"
+              personId:
+                type: "string"
+                example: "1"
+        "400":
+          description: "Error al obtener los usuarios"
+
+  /speciality/medics:
+    get:
+      tags:
+        - "Especialidad"
+      summary: "Medicos de una especialidad"
+      description: "Nos devuele todos los medicos de una especialidad dada"
+      operationId: "getAllMedicsEspecialities"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Operacion exitosa"
+          schema:
+            type: "object"
+            $ref: "#/definitions/Speciality"
+        "400":
+          description: "Error al obtener las especialidades/medicos"
+  /test/speciality:
+    get:
+      tags:
+        - "Especialidad"
+      summary: "get all especialidades"
+      description: "Nos devuele todos las especialidades"
+      operationId: "getAll"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Operacion exitosa"
+          schema:
+            type: "object"
+            $ref: "#/definitions/Speciality"
+        "400":
+          description: "Error al obtener las especialidades"
+
+  /people:
+    get:
+      tags:
+        - "People"
+      summary: "Get all personas"
+      description: "Nos devuele todos los datos de los usuaios registrados"
+      operationId: "getAllPeople"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Operacion exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/People"
+        "400":
+          description: "Error al obtener las personas"
+  /people/patients:
+    get:
+      tags:
+        - "People"
+      summary: "Get all pacientes"
+      description: "Nos devuele todos los datos de los usuaios registrados con el rol de paciente"
+      operationId: "getAllPeoplePatients"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Operacion exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/People"
+        "400":
+          description: "Error al obtener los pacientes"
+  /people/medics:
+    get:
+      tags:
+        - "People"
+      summary: "Get all medicos"
+      description: "Nos devuele todos los datos de los usuaios registrados con el rol de medico"
+      operationId: "getAllPeopleMedics"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Operacion exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/People"
+        "400":
+          description: "Error al obtener los medicos"
+
+      deprecated: false
+
+  /medWorkHs:
+    get:
+      tags:
+        - "Horario"
+      summary: "Get all Horarios"
+      description: "Nos devuele todos los horarios de los medicos"
+      operationId: "getAllMedicWorkHs"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        "200":
+          description: "Operacion exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Horario"
+        "400":
+          description: "Error al obtener las personas"
+    post:
+      tags:
+        - "Horario"
+      summary: "Crear Horario"
+      description: "Crea un horario"
+      operationId: "createWorkHour"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Posee la informacion necesaria para poder crear un horario."
+          required: true
+          schema:
+            $ref: "#/definitions/Horario"
+      responses:
+        "200":
+          description: "Horario Creado"
+        "300":
+          description: "No existe el medico"
+        "301":
+          description: "No existe la especialidad"
+        "302":
+          description: "Conflicto coon otros horarios"
+        "400":
+          description: "Error al crear horario"
+
+  /medWorkHs/getWorkHours_specDate:
+    post:
+      tags:
+        - "Horario"
+      summary: "Get horarios en torno a dia y especialidad"
+      description: "Nos devuele todos los horarios de todos los medicos para un dia especifico y una especialidad"
+      operationId: "getAllMedicWorkHsSpecDay"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Informacion necesaria para poder buscar horarios."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              date:
+                type: "string"
+                example: "2020-6-23"
+              speciality:
+                type: "string"
+                example: "2"
+      responses:
+        "200":
+          description: "Operacion exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Horario"
+        "400":
+          description: "Error al obtener los horarios por fecha"
+  /medWorkHs/getWorkHours_specDate_Medic:
+    post:
+      tags:
+        - "Horario"
+      summary: "Get horarios en torno a dia y especialidad"
+      description: "Nos devuele todos los horarios de todos los medicos para un dia especifico y una especialidad"
+      operationId: "getAllMedicWorkHsSpecDay"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Informacion necesaria para poder buscar horarios."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              date:
+                type: "string"
+                example: "2020-6-23"
+              speciality:
+                type: "string"
+                example: "2"
+              medicId:
+                type: "string"
+                example: "m-2"
+      responses:
+        "200":
+          description: "Operacion exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Horario"
+        "400":
+          description: "Error al obtener los horarios por fecha"
+
+definitions:
+  User:
+    type: "object"
+    required:
+      - "email"
+      - "password"
+    properties:
+      email:
+        type: "string"
+        example: "randomEmail@mail.com"
+      password:
+        type: "string"
+        example: "shhh!_es_un_secreto!"
+  Turno:
+    type: "object"
+    required:
+      - "patientId"
+      - "medicId"
+      - "specialityId"
+      - "day"
+      - "time_start"
+      - "time_end"
+    properties:
+      bookingId:
+        type: "integer"
+        format: "int64"
+      day:
+        type: "string"
+        example: "2020-02-01"
+      # category:
+      # $ref: "#/definitions/Category"
+      status:
+        type: "string"
+        example: "confirmado"
+      time_start:
+        type: "string"
+        example: "10:30"
+      time_end:
+        type: "string"
+        example: "11:00"
+      patientId:
+        type: "string"
+        example: "p-1"
+      medicId:
+        type: "string"
+        example: "m-1"
+      specialityId:
+        type: "integer"
+        example: "1"
+  Speciality:
+    type: "object"
+    properties:
+      specialityId:
+        type: "integer"
+        example: 142
+      type:
+        type: "string"
+        example: "Hearth Disease"
+  People:
+    type: "object"
+    required:
+      - "id"
+      - "name"
+      - "sureName"
+      - "dateOfBirth"
+      - "dni"
+      - "userUUID"
+      - "roleUUID"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      name:
+        type: "string"
+        example: "Carlos Santiago"
+      sureName:
+        type: "string"
+        example: "Yanzon"
+      dateOfBirth:
+        type: "string"
+        example: "2019-11-03"
+      dni:
+        type: "string"
+        example: "1089992"
+      userUUID:
+        type: "string"
+        example: "1"
+      roleUUID:
+        type: "string"
+        example: "m-1"
+      # category:
+      # $ref: "#/definitions/Category"
+  Horario:
+    type: "object"
+    required:
+      - "id"
+      - "day"
+      - "startHour"
+      - "finishHour"
+      - "specialityId"
+      - "personId"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      day:
+        type: "string"
+        example: "2020-02-01"
+      # category:
+      # $ref: "#/definitions/Category"
+      personId:
+        type: "string"
+        example: "m-1"
+      startHour:
+        type: "string"
+        example: "7:30"
+      finishHour:
+        type: "string"
+        example: "15:00"
+      specialityId:
+        type: "integer"
+        example: "1"
