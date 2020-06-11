@@ -49,7 +49,7 @@ paths:
         "400":
           description: "Error al obtener los turnos"
   /booking/medic:
-    get:
+    post:
       tags:
         - "Turno"
       summary: "Obtener turnos de un medico"

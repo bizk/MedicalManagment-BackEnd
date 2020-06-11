@@ -8,4 +8,7 @@ module.exports = (app) => {
     app.put('/booking/cancelBooking', (req, res) => bookingController.cancelBooking(req, res));
     app.delete('/booking', (req, res) => bookingController.cancelBookingByMedicCentre(req, res));
     app.get('/test/booking', (req,res) => bookingController.getAll(req,res));
+
+    app.post("/booking/patient", (req, res) => bookingController.getById_patient(req, res));
+    app.post("/booking/medic", (req, res) => bookingController.getById_medic(req, res));
 }

@@ -1,4 +1,4 @@
-const { User, People } = require('../models');
+const { User, People, Role } = require('../models');
 
 //Create a new user
 const uuid = require('uuid/v4');
@@ -26,9 +26,12 @@ module.exports = {
                 mail: req.body.mail,
                 password: req.body.password
             }, 
-            include: {
+            include: [{
                 model: People,
-            }
+                include: [{
+                    model: Role,
+                }]
+            }]
         }).then(data => {res.status(200).send(data.dataValues.person)})
             .catch(e => {res.status(400).send({
                 message: e.message || "Some error occurred while creating the user."

@@ -128,13 +128,33 @@ module.exports = {
             where: {
                 patientId: req.body.id
             },
-            include: [{
-                model: People,
-                as: 'medics'
-            }, {
-                model: Specialities,
-                as: 'speciality'
+            include: [
+                {
+                    model: Specialities,
+                    as: 'speciality'
+                },
+                {
+                    model: People,
+                    as: 'medic'
+                }
+            ]
+        }).then(data=>res.status(200).send(data)).catch(e => {console.log(e), res.status(400).send()});
+    },
+
+    getById_medic(req, res) {
+        Booking.findAll({
+            where: {
+                medicId: req.body.id
             },
+            include: [
+                {
+                    model: Specialities,
+                    as: 'speciality'
+                },
+                {
+                    model: People,
+                    as: 'patient'
+                }
             ]
         }).then(data=>res.status(200).send(data)).catch(e => {console.log(e), res.status(400).send()});
     },
