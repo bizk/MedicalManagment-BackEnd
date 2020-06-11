@@ -16,18 +16,9 @@ module.exports = {
 
     getAll(req, res) {
         console.log("!")
-        People.findAll({
-            include: [
-                {
-                    model: User
-                }
-                // ,{
-                //     model: Booking
-                // }
-            ]
-        })
+        People.findAll({})
         .then(data => res.status(200).send(data))
-        .catch(e => res.status(500))
+        .catch(e => res.status(400))
     },
 
     getAllPatients(req, res) {
@@ -47,8 +38,6 @@ module.exports = {
             include: [{
                 model: Role,       
                 where: { role: 'medic' }        
-            }, {
-                model: MedicWorkHours,
             }
             ],
         })
