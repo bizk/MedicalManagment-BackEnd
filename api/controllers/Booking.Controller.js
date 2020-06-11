@@ -37,7 +37,9 @@ module.exports = {
                     Booking.setMedic(Medic);
                     Booking.setSpeciality(Spec);
                 });
-            }).then(() => res.status(200).send({message: "Succesfully created user!"})).catch(e => console.log(e));
+            })
+            .then(() => res.status(200).send({message: "Succesfully created user!"}))
+            .catch(e => {res.status(400).send({message: "Error en la creacion."}); console.log(e)});
         } else {
             res.status(300).send({message: "Solo se puede creear un turno en los proximos dos meses a la fecha."})
         }
@@ -81,19 +83,21 @@ module.exports = {
             ]
         }).then(data=>res.status(200).send(data)).catch(e=>console.log(e));
     },
+
     confirmBooking(req, res) {
         Booking.findOne({ where:{ bookingId: req.body.bookingId }})
         .then(booking => {
             let arrTim = booking.time_start.split(":");
             let bookingStart = moment(booking.day).hour(arrTim[0]).minute(arrTim[1]).format("YYYY-MM-DD kk:mm:ss");
-            if (bookingStart < maxHour && bookingStart > minHour) {
+            if (bookingStart < maxHour && bookingStart > minHour && booking.status === "") {
                 Booking.update({status: "confirmed"},{ where:{ bookingId: req.body.bookingId }})
-                .then(res.status(200).send({message: "Se ha confirmado con exito"}))
+                .then(res.status(200).send({message: "Se ha el turno confirmado con exito"}))
                 .catch(e => console.log(e));
             } else {
                 res.status(300).send({message: "No se puede confirmar un turno una hora antes"});
             }
-        });
+        })
+        .catch(e => {console.log(e); res.status(400).send("error")});
     },
 
     cancelBooking(req, res) {
@@ -107,14 +111,51 @@ module.exports = {
                 } else if (bookingStart < maxHour && bookingStart >= minHour) {
                     res.status(300).send({message: "Cancelar el turno 12 horas antes generara cargas adicionales"});
                 } else {
-                    res.status(300).send({message: "El turno ha expirado"});
+                    res.status(301).send({message: "El turno ha expirado"});
                 }
             }
         ).catch(e => console.log(e));
     },
+
     cancelBookingByMedicCentre(req, res) {
         Booking.update({status: "canceledMedicCentre"},{ where:{ bookingId: req.body.bookingId }})
-        .then(data => res.status(200).send(data))
-        .catch(e => console.log(e));
-    }
+        .then(data => res.status(200).send({message: "Booking cancelado por centro medico"}))
+        .catch(e => {console.log(e), res.status(400)});
+    },
+
+    getById_patient(req, res) {
+        Booking.findAll({
+            where: {
+                patientId: req.body.id
+            },
+            include: [
+                {
+                    model: Specialities,
+                    as: 'speciality'
+                },
+                {
+                    model: People,
+                    as: 'medic'
+                }
+            ]
+        }).then(data=>res.status(200).send(data)).catch(e => {console.log(e), res.status(400).send()});
+    },
+
+    getById_medic(req, res) {
+        Booking.findAll({
+            where: {
+                medicId: req.body.id
+            },
+            include: [
+                {
+                    model: Specialities,
+                    as: 'speciality'
+                },
+                {
+                    model: People,
+                    as: 'patient'
+                }
+            ]
+        }).then(data=>res.status(200).send(data)).catch(e => {console.log(e), res.status(400).send()});
+    },
 }

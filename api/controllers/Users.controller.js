@@ -1,4 +1,4 @@
-const User = require('../models').User;
+const { User, People, Role } = require('../models');
 
 //Create a new user
 const uuid = require('uuid/v4');
@@ -20,20 +20,27 @@ module.exports = {
     },
 
     loginUser(req, res) {
+        console.log(req.body);
         User.findOne({
             where: {
                 mail: req.body.mail,
                 password: req.body.password
-            }
-        }).then(data => {res.status(200).send(data)})
-            .catch(e => {res.status(500).send({
+            }, 
+            include: [{
+                model: People,
+                include: [{
+                    model: Role,
+                }]
+            }]
+        }).then(data => {res.status(200).send(data.dataValues.person)})
+            .catch(e => {res.status(400).send({
                 message: e.message || "Some error occurred while creating the user."
             })
         })
     },
 
     getAll(req, res) {
-        User.findAll()
+        User.findAll({})
             .then(data => {res.status(200).send(data)})
             .catch(err => {res.status(500).send({
                 message: err.message || "Some error ocurred while fetching the users"

@@ -19,9 +19,9 @@ module.exports = {
 
     createUsers() {
         User.bulkCreate([
-            {userUUID: 'p-1', mail: 'testMail@gmail.com', password: "password"},
+            {userUUID: 'p-1', mail: 'paciente_1', password: "abc123"},
             {userUUID: 'p-2', mail: 'ziso@ewek.uz', password: "olujijev"},
-            {userUUID: 'm-1',mail: 'soovunel@fewiz.uk', password: "ivoirwu1p"},
+            {userUUID: 'm-1',mail: 'medico_1', password: "abc123"},
             {userUUID: 'm-2',mail: 'temaf@defo.id', password: "haffobtu4f"},
             {userUUID: 'c-1',mail: 'ohri@mot.fi', password: 'powhazgimege'}
         ])
@@ -70,11 +70,14 @@ module.exports = {
     },
 
     createBookings() {
+        let x = moment(localDay).add(2, `h`)
+        let y = x.add(1,'h')
         Booking.bulkCreate([
             {bookingId: '1', day: localDay, time_start:'09:50', time_end:"15:30", status: ''},
-            {bookingId: '2', day: localDay, time_start:'14:30', time_end:"15:30", status: ''},
+            {bookingId: '2', day: localDay, time_start:'01:30', time_end:"02:30", status: 'confirmed'},
+            {bookingId: '5', day: localDay, time_start:'20:50', time_end:"21:30", status: ''},
             {bookingId: '3', day: moment(localDay).add(2, 'day'), time_start:'14:30', time_end:"15:30", status: ''},
-            // {bookingId: '4', day: moment(localDay).add(1, 'M'), time_start:'15:30', time_end:"16:30", status: ''},
+            {bookingId: '4', day: moment(localDay).add(1, 'M'), time_start:'15:30', time_end:"16:30", status: 'canceledMedicCentre'},
             // {bookingId: '5', day: '10/10/2020', time_start:'10:30', time_end:"11:30", status: 'canceled'},
             // {bookingId: '6', day: '4/16/2020', time_start:'20:30', time_end:"22:30", status: 'canceled'},
         ]).then(() =>{
@@ -94,10 +97,10 @@ module.exports = {
             let spec_3 = Specialities.findOne({where: {specialityId: '3'}})
             
             createBooking(booking_1, pat1, med1, spec_1);
-            createBooking(booking_2, pat2, med1, spec_1);
-            createBooking(booking_3, pat1, med2, spec_2);
-            createBooking(booking_1, pat2, med1, spec_3);
-
+            createBooking(booking_2, pat1, med1, spec_1);
+            createBooking(booking_4, pat1, med1, spec_2);
+            createBooking(booking_3, pat1, med2, spec_3);
+            createBooking(booking_5, pat1, med2, spec_3);
         });
 
         function createBooking(booking, patient, medic, spec) {

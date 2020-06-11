@@ -42,7 +42,7 @@ People.hasMany(Booking, { as: 'bookings'});
 Booking.belongsTo(People, { foreignKey:'patientId', as: 'patient'});
 Booking.belongsTo(People, { foreignKey:'medicId', as: 'medic'});
 Specialities.hasMany(Booking, { as: 'bookings'});
-Booking.belongsTo(Specialities)
+Booking.belongsTo(Specialities);
 
 let MedicWorkHours = require('./MedicWorkHours.Model.js')(sequelize, Sequelize);
 People.hasMany(MedicWorkHours);

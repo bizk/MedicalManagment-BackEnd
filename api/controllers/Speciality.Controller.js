@@ -7,7 +7,6 @@ module.exports = {
         .catch(e => console.log(e.message));
     },
 
-
     getAll(req, res) {
         Specialities.findAll({
             include: [{

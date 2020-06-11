@@ -30,6 +30,18 @@ module.exports = {
         .catch(e => res.status(500))
     },
 
+    getAllPatients(req, res) {
+        People.findAll({
+            include: [{
+                model: Role,       
+                where: { role: 'patient' }        
+            }
+            ],
+        })
+        .then(data => res.status(200).send(data))
+        .catch(e => res.status(400))
+    },
+
     getAllMedics(req, res) {
         People.findAll({
             include: [{
@@ -41,7 +53,7 @@ module.exports = {
             ],
         })
         .then(data => res.status(200).send(data))
-        .catch(e => res.status(500))
+        .catch(e => res.status(400))
     },
 
     getWithUUID(req, res) {

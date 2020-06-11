@@ -1,9 +1,18 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./resources/swagger.yaml');
 
 var app = express();
 var port = process.env.PORT || 8080;
+
+var options = {
+  explorer: true
+};
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 
 app.use(bodyParser.urlencoded(
   {
@@ -14,7 +23,7 @@ app.use(cors())
 
 require("./api/routes/People.Routes.js")(app);
 require("./api/routes/Role.Routes.js")(app);
-require("./api/routes/UserRoutes.js")(app);
+require("./api/routes/UserRoutes.Routes")(app);
 require("./api/routes/Speciality.Routes.js")(app);
 require("./api/routes/Booking.Routes")(app);
 require("./api/routes/MedWorkHours.Routes")(app);

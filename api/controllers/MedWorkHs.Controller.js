@@ -26,7 +26,7 @@ module.exports = {
             }
         })
         .then(data => res.status(200).send(data))
-        .catch(e => console.log(e));
+        .catch(e => {console.log(e); res.status(400).send("Error al obtener los horarios por fecha")});
     },
 
     getWorkHours_specDateMedic(req, res) {
