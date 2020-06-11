@@ -32,7 +32,13 @@ module.exports = {
                     model: Role,
                 }]
             }]
-        }).then(data => {res.status(200).send(data.dataValues.person)})
+        }).then(data => {
+            if (data === true) {
+                res.status(200).send(data.dataValues.person);
+            } else {
+                res.status(300).send();
+            }
+        })
             .catch(e => {res.status(400).send({
                 message: e.message || "Some error occurred while creating the user."
             })

@@ -39,6 +39,17 @@ paths:
         - "application/json"
       produces:
         - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Id de paciente para obtener turnos."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              id:
+                type: "string"
+                example: "p-1"
       responses:
         "200":
           description: "successful operation"
@@ -59,6 +70,17 @@ paths:
         - "application/json"
       produces:
         - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Id de medico para obtener turnos."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              id:
+                type: "string"
+                example: "3"
       responses:
         "200":
           description: "successful operation"
@@ -215,7 +237,6 @@ paths:
                 example: "El turno ha expirado"
         "400":
           description: "Error al cancelar el turno"
-
   /test/booking:
     get:
       tags:
@@ -263,19 +284,17 @@ paths:
           description: "Se loggea con exito"
           schema:
             type: "object"
-            properties:
-              message:
-                type: "string"
-                example: "???"
+            $ref: "#/definitions/Persona"
         "300":
           description: "Credenciales invalidas"
         "400":
           description: "Error al iniciar sesion"
+  /test/users:
     get:
       tags:
         - "User"
       summary: "get all usuarios"
-      description: "Nos devuele todos los usuarios disponibles"
+      description: "(Solo para testing) Nos devuele todos los usuarios disponibles"
       operationId: "getAll"
       consumes:
         - "application/json"
@@ -285,38 +304,68 @@ paths:
         "200":
           description: "successful operation"
           schema:
-            properties:
-              email:
-                type: "string"
-                example: "randomEmail@mail.com"
-              password:
-                type: "string"
-                example: "shhh!_es_un_secreto!"
-              personId:
-                type: "string"
-                example: "1"
+            type: array
+            $ref: "#/definitions/User"
         "400":
           description: "Error al obtener los usuarios"
-
-  /speciality/medics:
-    get:
+    post:
       tags:
-        - "Especialidad"
-      summary: "Medicos de una especialidad"
-      description: "Nos devuele todos los medicos de una especialidad dada"
-      operationId: "getAllMedicsEspecialities"
+        - "User"
+      summary: "Registrar usuario"
+      deprecated: true
+      description: "solo para testing, registra un usuario"
+      operationId: "register"
       consumes:
         - "application/json"
       produces:
         - "application/json"
-      responses:
-        "200":
-          description: "Operacion exitosa"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Id del turno."
+          required: true
           schema:
             type: "object"
-            $ref: "#/definitions/Speciality"
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: "Se crea con exito"
+          schema:
+            type: "object"
+            $ref: "#/definitions/User"
         "400":
-          description: "Error al obtener las especialidades/medicos"
+          description: "Error al crear usuario"
+
+  # /speciality/medics:
+  #   post:
+  #     tags:
+  #       - "Especialidad"
+  #     summary: "Medicos de una especialidad"
+  #     description: "Nos devuele todos los medicos de una especialidad dada"
+  #     operationId: "getAllMedicsEspecialities"
+  #     consumes:
+  #       - "application/json"
+  #     produces:
+  #       - "application/json"
+  #     parameters:
+  #       - name: "body"
+  #         in: "body"
+  #         description: "Especialidad a buscar."
+  #         required: true
+  #         schema:
+  #           type: "object"
+  #           properties:
+  #             speciality:
+  #               type: "string"
+  #               example: "2"
+  #     responses:
+  #       "200":
+  #         description: "Operacion exitosa"
+  #         schema:
+  #           type: "object"
+  #           $ref: "#/definitions/Speciality"
+  #       "400":
+  #         description: "Error al obtener las especialidades/medicos"
   /test/speciality:
     get:
       tags:
@@ -337,7 +386,7 @@ paths:
         "400":
           description: "Error al obtener las especialidades"
 
-  /people:
+  /test/people:
     get:
       tags:
         - "People"
@@ -357,7 +406,7 @@ paths:
               $ref: "#/definitions/People"
         "400":
           description: "Error al obtener las personas"
-  /people/patients:
+  /test/people/patients:
     get:
       tags:
         - "People"
@@ -377,7 +426,7 @@ paths:
               $ref: "#/definitions/People"
         "400":
           description: "Error al obtener los pacientes"
-  /people/medics:
+  /test/people/medics:
     get:
       tags:
         - "People"
@@ -400,7 +449,7 @@ paths:
 
       deprecated: false
 
-  /medWorkHs:
+  /test/medWorkHs:
     get:
       tags:
         - "Horario"
@@ -420,6 +469,7 @@ paths:
               $ref: "#/definitions/Horario"
         "400":
           description: "Error al obtener las personas"
+  /medWorkHs:
     post:
       tags:
         - "Horario"
@@ -525,15 +575,15 @@ definitions:
   User:
     type: "object"
     required:
-      - "email"
+      - "mail"
       - "password"
     properties:
-      email:
+      mail:
         type: "string"
         example: "randomEmail@mail.com"
       password:
         type: "string"
-        example: "shhh!_es_un_secreto!"
+        example: "abc123"
   Turno:
     type: "object"
     required:
@@ -549,7 +599,7 @@ definitions:
         format: "int64"
       day:
         type: "string"
-        example: "2020-02-01"
+        example: "7/20/2020"
       # category:
       # $ref: "#/definitions/Category"
       status:
@@ -629,8 +679,6 @@ definitions:
       day:
         type: "string"
         example: "2020-02-01"
-      # category:
-      # $ref: "#/definitions/Category"
       personId:
         type: "string"
         example: "m-1"
@@ -643,3 +691,45 @@ definitions:
       specialityId:
         type: "integer"
         example: "1"
+      person:
+        type: "object"
+        $ref: "#/definitions/Person"
+      speciality:
+        type: "object"
+        $ref: "#/definitions/Speciality"
+  Role:
+    type: "object"
+    properties:
+      roleUUID": 
+        type: "integer"
+        example: 2
+      role:
+        type: "string"
+        example: "patient"
+  Persona:
+    type: "object"
+    properties:
+      id:
+        type: 'integer'
+        example: 1
+      name:
+        type: "string"
+        example: "Susie"
+      sureName:
+        type: "string"
+        example: "Cain"
+      dateOfBirth:
+        type: 'string'
+        example: "01/02/1984"
+      dni:
+        type: "string"
+        example: "1234567"
+      userUUID:
+        type: "string"
+        example: "p-1"
+      roleRoleUUID:
+        type: "string"
+        example: "2"
+      role:
+        type: "object"
+        $ref: "#/definitions/Role" 
