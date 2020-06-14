@@ -20,29 +20,24 @@ module.exports = {
     },
 
     loginUser(req, res) {
-        console.log(req.body);
-        User.findOne({
-            where: {
-                mail: req.body.mail,
-                password: req.body.password
-            }, 
-            include: [{
-                model: People,
+        try {
+            User.findOne({
+                where: {
+                    mail: req.body.mail,
+                    password: req.body.password
+                }, 
                 include: [{
-                    model: Role,
+                    model: People,
+                    include: [{
+                        model: Role,
+                    }]
                 }]
-            }]
-        }).then(data => {
-            if (data === true) {
-                res.status(200).send(data.dataValues.person);
-            } else {
-                res.status(300).send();
-            }
-        })
-            .catch(e => {res.status(400).send({
-                message: e.message || "Some error occurred while creating the user."
-            })
-        })
+            }).then(data => res.status(200).send(data.dataValues.person))
+            .catch(e => res.status(300).send({ message: "Las credenciales son invalidas" }))
+        } catch (error) {
+            res.status(400).send({message: "Error"});
+        }
+        
     },
 
     getAll(req, res) {

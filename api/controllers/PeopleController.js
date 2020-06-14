@@ -38,6 +38,8 @@ module.exports = {
             include: [{
                 model: Role,       
                 where: { role: 'medic' }        
+            }, {
+                model: MedicWorkHours
             }
             ],
         })
