@@ -71,15 +71,20 @@ module.exports = {
 
     createBookings() {
         let x = moment(localDay).add(2, `h`)
-        let y = x.add(1,'h')
+        
+        let pata = moment().add(1,"d").add(1, "M").toDate()
+        let oneMonth = moment().add(1,"M");
+        let twoMonths = moment().add(2,"M").add(1,"d");
+
+        let date = moment().toDate();
         Booking.bulkCreate([
-            {bookingId: '1', day: localDay, time_start:'09:50', time_end:"15:30", status: ''},
-            {bookingId: '2', day: localDay, time_start:'01:30', time_end:"02:30", status: 'confirmed'},
-            {bookingId: '5', day: localDay, time_start:'20:50', time_end:"21:30", status: ''},
-            {bookingId: '3', day: moment(localDay).add(2, 'day'), time_start:'14:30', time_end:"15:30", status: ''},
-            {bookingId: '4', day: moment(localDay).add(1, 'M'), time_start:'15:30', time_end:"16:30", status: 'canceledMedicCentre'},
+            {bookingId: '1', day: date, time_start:'09:50', time_end:"15:30", status: ''},
+            {bookingId: '2', day: date, time_start:'01:30', time_end:"02:30", status: ''},
+            {bookingId: '5', day: twoMonths, time_start:'20:50', time_end:"21:30", status: 'reservado'},
+            {bookingId: '3', day: oneMonth, time_start:'14:30', time_end:"15:30", status: ''},
+            {bookingId: '4', day: twoMonths, time_start:'15:30', time_end:"16:30", status: 'canceledMedicCentre'},
             // {bookingId: '5', day: '10/10/2020', time_start:'10:30', time_end:"11:30", status: 'canceled'},
-            // {bookingId: '6', day: '4/16/2020', time_start:'20:30', time_end:"22:30", status: 'canceled'},
+            {bookingId: '6', day: moment(), time_start:'13:00', time_end:"20:00", status: ''},
         ]).then(() =>{
             let med1 = People.findOne({where: {userUUID: 'm-1'}});
             let med2 = People.findOne({where: {userUUID: 'm-2'}});
@@ -91,16 +96,18 @@ module.exports = {
             let booking_3 = Booking.findOne({where: {bookingId: '3'}});
             let booking_4 = Booking.findOne({where: {bookingId: '4'}});
             let booking_5 = Booking.findOne({where: {bookingId: '5'}});
+            let booking_6 = Booking.findOne({where: {bookingId: '6'}});
 
             let spec_1 = Specialities.findOne({where: {specialityId: '1'}})
             let spec_2 = Specialities.findOne({where: {specialityId: '2'}})
             let spec_3 = Specialities.findOne({where: {specialityId: '3'}})
             
             createBooking(booking_1, pat1, med1, spec_1);
-            createBooking(booking_2, pat1, med1, spec_1);
+            createBooking(booking_2, pat1, med1, spec_2);
             createBooking(booking_4, pat1, med1, spec_2);
-            createBooking(booking_3, pat1, med2, spec_3);
+            createBooking(booking_3, pat1, med2, spec_2);
             createBooking(booking_5, pat1, med2, spec_3);
+            createBooking(booking_6, pat2, med2, spec_2);
         });
 
         function createBooking(booking, patient, medic, spec) {

@@ -1,68 +1,72 @@
 const { Booking, People, Specialities, MedicWorkHours } = require('../models');
 var moment = require('moment');
-moment().format();
 
-const Sequelize = require('sequelize');
+const {Op, Sequelize} = require('sequelize');
 
 const maxHour = moment().add(12,'h').format("YYYY-MM-DD kk:mm:ss");
 const minHour = moment().add(1, 'h').format("YYYY-MM-DD kk:mm:ss");
             
 module.exports = {
     createBooking(req, res) {
-        let bookingDate = moment(req.body.day).format("YYYY-MM-DD");
-        let localTime = moment().format("YYYY-MM-DD");
-        if (bookingDate < moment(localTime).add(2,'M').format("YYYY-MM-DD") && bookingDate >= localTime) {
-            var patient = People.findOne({
-                where: {
-                    id: req.body.patientId
-                }
+        let patient = People.findOne({where: {id: req.body.id}});
+        Booking.update({status: "reservado"},{ where:{ bookingId: req.body.bookingId }})
+        
+        Booking.findOne({where:{ bookingId: req.body.bookingId }})
+        .then(booking => {
+            Sequelize.Promise.all([booking, patient]).spread((Booking, Patient) => {
+                Booking.setPatient(Patient);
             });
-            var medic = People.findOne({
-                where: {
-                    id: req.body.medicId
-                }
-            });
-            var speciality = Specialities.findOne({
-                where: {
-                    specialityid:  req.body.specialityId
-                }
-            })
-            Booking.create({
-                day: req.body.day,
-                time_start: req.body.time_start,
-                time_end: req.body.time_end,
-            }).then(booking => {
-                Sequelize.Promise.all([booking, patient, medic, speciality]).spread((Booking, Patient, Medic, Spec) => {
-                    Booking.setPatient(Patient);
-                    Booking.setMedic(Medic);
-                    Booking.setSpeciality(Spec);
-                });
-            })
-            .then(() => res.status(200).send({message: "Succesfully created user!"}))
-            .catch(e => {res.status(400).send({message: "Error en la creacion."}); console.log(e)});
-        } else {
-            res.status(300).send({message: "Solo se puede creear un turno en los proximos dos meses a la fecha."})
-        }
+        })
+        .then(result => res.status(200).send({message: "Turno agendado con exito!"}))
+        .catch(e => {console.log(e), res.status(400).send()})
     },
 
-    getTurnos(req, res) {
-        MedicWorkHours.findAll({
+    getTurnos_specialityDay_days(req, res) {
+        Booking.findAll({
             where: {
-                day: req.body.day,
-                specialitySpecialityId:  req.body.specialityId
+                status: "",
+                specialitySpecialityId: req.body.specialityId,
             },
-            include: {
-                model: People,
-                include: {
-                    model: Booking,
-                    as: 'bookings'
-                }
-            }
+            attributes: ['day'],
+            group: ['day'],
         }).then(d => {
-            // let x = d[0].person;
-            // console.log(x);
-            res.status(200).send(d[0])
-        }).catch(e => console.log(e));
+            res.status(200).send(d)
+        }).catch(e => {console.log(e); res.status(400).send()});
+    },
+
+    getTurnos_specialityDay_medics(req, res) {
+        Booking.findAll({
+            where: {
+                status: "",
+                day: req.body.day,
+                specialitySpecialityId: req.body.specialityId
+            },
+            attributes: ['specialitySpecialityId'],
+            include: [
+                {
+                    model: People,
+                    as: 'medic',
+                    attributes: ["id", "name", "sureName"],
+                }
+            ],
+            group: ['medic.id']
+        }).then(d => {
+            res.status(200).send(d)
+        }).catch(e => {console.log(e); res.status(400).send()});
+    },
+
+    getTurnos_specialityDay_hours(req, res) {
+        Booking.findAll({
+            where: {
+                status: "",
+                day: req.body.day,
+                specialitySpecialityId: req.body.specialityId,
+                medicId: req.body.medicId
+            },
+            attributes: [`bookingId`,'time_start', 'time_end'],
+        }).then(d => {
+            res.status(200).send(d)
+        }).catch(e => {console.log(e); res.status(400).send()});
     },
 
     getAll(req, res) {
@@ -124,9 +128,14 @@ module.exports = {
     },
 
     getById_patient(req, res) {
+        console.log("hola", req.body);
         Booking.findAll({
             where: {
-                patientId: req.body.id
+                patientId: req.body.id,
+                day: {
+                    [Op.gte]: moment().format("YYYY-MM-DD"),
+                    [Op.lte]: moment().add(2, "M").add(1, "d").format("YYYY-MM-DD")
+                }
             },
             include: [
                 {
@@ -138,7 +147,8 @@ module.exports = {
                     as: 'medic'
                 }
             ]
-        }).then(data=>res.status(200).send(data)).catch(e => {console.log(e), res.status(400).send()});
+        }).then(data=>res.status(200).send(data))
+        .catch(e => {console.log(e), res.status(400).send()});
     },
 
     getById_medic(req, res) {
