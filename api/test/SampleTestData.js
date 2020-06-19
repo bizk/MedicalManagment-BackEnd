@@ -54,10 +54,10 @@ module.exports = {
             let medWorkHs1_2 = MedicWorkHours.findOne({where: {id: '2'}});
             let medWorkHs2 = MedicWorkHours.findOne({where: {id: '3'}});
             let medWorkHs2_2 = MedicWorkHours.findOne({where: {id: '4'}});
-            createWorkHs(medWorkHs1, med1, spec_1);
-            createWorkHs(medWorkHs1_2, med1, spec_2);
-            createWorkHs(medWorkHs2, med2, spec_2);
-            createWorkHs(medWorkHs2_2, med2, spec_3);
+            // createWorkHs(medWorkHs1, med1, spec_1);
+            // createWorkHs(medWorkHs1_2, med1, spec_2);
+            // createWorkHs(medWorkHs2, med2, spec_2);
+            // createWorkHs(medWorkHs2_2, med2, spec_3);
 
         });
 
