@@ -48,6 +48,8 @@ People.hasMany(MedicWorkHours);
 MedicWorkHours.belongsTo(People);
 Specialities.hasMany(MedicWorkHours);
 MedicWorkHours.belongsTo(Specialities);
+Booking.belongsTo(MedicWorkHours);
+MedicWorkHours.hasMany(Booking, { as: 'bookings'});
 
 
 db.User = User;
