@@ -179,7 +179,11 @@ module.exports = {
                         as: 'patient'
                     }],
                     as: 'bookings'
-                }]
+                },
+                {
+                    model: Specialities,
+                }
+            ]
             })
                 .then(data => res.status(200).send(data))
                 .catch(e => {
