@@ -97,8 +97,10 @@ module.exports = {
                 Booking.update({status: "confirmed"},{ where:{ bookingId: req.body.bookingId }})
                 .then(res.status(200).send({message: "Se ha el turno confirmado con exito"}))
                 .catch(e => console.log(e));
-            } else {
+            } else if (bookingStart < maxHour) {
                 res.status(300).send({message: "No se puede confirmar un turno una hora antes"});
+            } else {
+                res.status(301).send({message: "No se puede confirmar un turno antes del dia"});
             }
         })
         .catch(e => {console.log(e); res.status(400).send("error")});
@@ -109,12 +111,14 @@ module.exports = {
         .then(booking => {
                 let arrTim = booking.time_start.split(":");
                 let bookingStart = moment(booking.day).hour(arrTim[0]).minute(arrTim[1]).format("YYYY-MM-DD kk:mm:ss");
-                booking.update({status: "canceled"});
                 if (bookingStart > maxHour) {
+                    booking.update({status: "canceled"});
                     res.status(200).send({message: "Se ha cancelado el turno con exito"});
                 } else if (bookingStart < maxHour && bookingStart >= minHour) {
+                    booking.update({status: "canceled12hs"});
                     res.status(300).send({message: "Cancelar el turno 12 horas antes generara cargas adicionales"});
                 } else {
+                    booking.update({status: "expired"});
                     res.status(301).send({message: "El turno ha expirado"});
                 }
             }
@@ -135,6 +139,12 @@ module.exports = {
                 day: {
                     [Op.gte]: moment().format("YYYY-MM-DD"),
                     [Op.lte]: moment().add(2, "M").add(1, "d").format("YYYY-MM-DD")
+                },
+                time_end: {
+                    [Op.gte]: moment().hour()
+                },
+                time_start: {
+                    [Op.gte]: moment().hour()
                 }
             },
             include: [

@@ -13,8 +13,6 @@ module.exports = {
         this.createPeople();
         this.createRoles();
         this.createSpecialities();
-        this.createBookings();
-        this.createMedWorkHS();
     },
 
     createUsers() {
