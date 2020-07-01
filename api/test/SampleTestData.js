@@ -1,4 +1,4 @@
-const { User, People,Role, Specialities, Booking, MedicWorkHours } = require('../models');
+const { User, People,Role, Specialities, Booking, MedicWorkHours, WaitList } = require('../models');
 var moment = require('moment');
 var localDay = moment().format("YYYY-MM-DD");
 
@@ -13,8 +13,6 @@ module.exports = {
         this.createPeople();
         this.createRoles();
         this.createSpecialities();
-        this.createBookings();
-        this.createMedWorkHS();
     },
 
     createUsers() {
@@ -146,7 +144,8 @@ module.exports = {
             {specialityId: '1', type: "Hearth Disease"},
             {specialityId: '2', type: "Pulmonar Disease"},
             {specialityId: '3', type: "Bone Disease"},
-        ]).then(() => {
+        ])
+        .then(() => {
             var spec_1 = Specialities.findOne({where: {specialityId: '1'}});
             var spec_2 = Specialities.findOne({where: {specialityId: '2'}});
             var spec_3 = Specialities.findOne({where: {specialityId: '3'}});
@@ -156,15 +155,20 @@ module.exports = {
             Sequelize.Promise.all([spec_1, med1]).spread((Spec, Medic_1) => {
                 return Spec.addMedic([Medic_1]);
             });
-
+            
             Sequelize.Promise.all([spec_2, med1, med2]).spread((Spec, Medic_1, Medic_2) => {
                 return Spec.addMedic([Medic_1, Medic_2]);
             });
 
-            
             Sequelize.Promise.all([spec_3, med2]).spread((Spec, Medic) => {
                 return Spec.addMedic([Medic]);
             });
+
+            Sequelize.Promise.all([spec_1, spec_2, spec_3]).spread((Spec1, Spec2, Spec3) => {
+                WaitList.create({id: 1}).then(wl => wl.setSpeciality(Spec1)).catch(e => console.log(e));
+                WaitList.create({id: 2}).then(wl => wl.setSpeciality(Spec2)).catch(e => console.log(e));
+                WaitList.create({id: 3}).then(wl => wl.setSpeciality(Spec3)).catch(e => console.log(e));            
+            })
         });
     },
 }

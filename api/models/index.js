@@ -51,6 +51,12 @@ MedicWorkHours.belongsTo(Specialities);
 Booking.belongsTo(MedicWorkHours);
 MedicWorkHours.hasMany(Booking, { as: 'bookings'});
 
+let WaitList = require('./WaitList.model')(sequelize,Sequelize);
+let WaitListPatient = require(`./WaitListPatient.model`)(sequelize, Sequelize);
+WaitList.belongsToMany(People, {through: WaitListPatient, as: 'patient'});
+People.belongsToMany(WaitList, {through: WaitListPatient, as: 'waitList'});
+Specialities.hasOne(WaitList);
+WaitList.belongsTo(Specialities, {as: "speciality"});
 
 db.User = User;
 db.People = People;
@@ -58,6 +64,6 @@ db.Specialities = Specialities;
 db.Booking = Booking;
 db.Role = Role;
 db.MedicWorkHours = MedicWorkHours;
-// db.WaitList = require('./WaitList.model')(sequelize,Sequelize);
+db.WaitList = WaitList;
 
 module.exports = db;

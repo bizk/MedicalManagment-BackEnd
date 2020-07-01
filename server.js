@@ -12,7 +12,7 @@ var options = {
   explorer: true
 };
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, options));
 
 app.use(bodyParser.urlencoded(
   {
@@ -27,17 +27,17 @@ require("./api/routes/UserRoutes.Routes")(app);
 require("./api/routes/Speciality.Routes.js")(app);
 require("./api/routes/Booking.Routes")(app);
 require("./api/routes/MedWorkHours.Routes")(app);
+require("./api/routes/WaitList.Routes")(app);
 
 const db = require("./api/models");
 
-let forceSync = true;
-db.sequelize.sync({ force: forceSync }).then(() => {
+db.sequelize.sync({ force: false }).then(() => {
     console.log("Drop and re-sync db.");
   }).then(() => {
-    var test = require('./api/test/SampleTestData');
-    if (test.createSampleData()) {
-      test.createSampleData();
-    }
+    // var test = require('./api/test/SampleTestData');
+    // if (test.createSampleData()) {
+    //   test.createSampleData();
+    // }
   });
   
 var server = app.listen(port, function() {
