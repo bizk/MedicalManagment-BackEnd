@@ -26,6 +26,10 @@ module.exports = {
             where: {
                 status: "",
                 specialitySpecialityId: req.body.specialityId,
+                day: {
+                    [Op.gte]: moment(),
+                    [Op.lte]: moment().add(2, "M").add(1, "d").format("YYYY-MM-DD")
+                }
             },
             attributes: ['day'],
             group: ['day'],
@@ -112,10 +116,10 @@ module.exports = {
                 let arrTim = booking.time_start.split(":");
                 let bookingStart = moment(booking.day).hour(arrTim[0]).minute(arrTim[1]).format("YYYY-MM-DD kk:mm:ss");
                 if (bookingStart > maxHour) {
-                    booking.update({status: "canceled"});
+                    booking.update({status: "", patientId: null});
                     res.status(200).send({message: "Se ha cancelado el turno con exito"});
                 } else if (bookingStart < maxHour && bookingStart >= minHour) {
-                    booking.update({status: "canceled12hs"});
+                    booking.update({status: "", patientId: null});
                     res.status(300).send({message: "Cancelar el turno 12 horas antes generara cargas adicionales"});
                 } else {
                     booking.update({status: "expired"});
@@ -177,5 +181,74 @@ module.exports = {
                 }
             ]
         }).then(data=>res.status(200).send(data)).catch(e => {console.log(e), res.status(400).send()});
+    },
+
+    getTodayBookings(req, res) {
+        Booking.findAll({
+            where: {
+                medicId: req.body.id,
+                day: {
+                    [Op.gte]: moment().format("YYYY-MM-DD"),
+                    [Op.lte]: moment().add(1,"day").format("YYYY-MM-DD"),
+                }
+            },
+            include: [
+                {
+                    model: Specialities,
+                    as: 'speciality'
+                },
+                {
+                    model: People,
+                    as: 'patient'
+                }
+            ]
+        }).then(data=>res.status(200).send(data))
+        .catch(e => {console.log(e), res.status(400).send()});
+    },
+
+    getWeekBookings(req, res) {
+        Booking.findAll({
+            where: {
+                medicId: req.body.id,
+                day: {
+                    [Op.gte]: moment().format("YYYY-MM-DD"),
+                    [Op.lte]: moment().add(8,"day").format("YYYY-MM-DD"),
+                }
+            },
+            include: [
+                {
+                    model: Specialities,
+                    as: 'speciality'
+                },
+                {
+                    model: People,
+                    as: 'patient'
+                }
+            ]
+        }).then(data=>res.status(200).send(data))
+        .catch(e => {console.log(e), res.status(400).send()});
+    },
+
+    getAllBookings(req, res) {
+        Booking.findAll({
+            where: {
+                medicId: req.body.id,
+                day: {
+                    [Op.gte]: moment().format("YYYY-MM-DD"),
+                    [Op.lte]: moment().add(2, "month").add(1,"day").format("YYYY-MM-DD"),
+                }
+            },
+            include: [
+                {
+                    model: Specialities,
+                    as: 'speciality'
+                },
+                {
+                    model: People,
+                    as: 'patient'
+                }
+            ]
+        }).then(data=>res.status(200).send(data))
+        .catch(e => {console.log(e), res.status(400).send()});
     },
 }

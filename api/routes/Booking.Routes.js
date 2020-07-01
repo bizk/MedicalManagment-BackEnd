@@ -12,6 +12,11 @@ module.exports = (app) => {
     app.post('/booking/getMedics', (req, res) => bookingController.getTurnos_specialityDay_medics(req, res));
     app.post('/booking/getHours', (req, res) => bookingController.getTurnos_specialityDay_hours(req, res));
 
+    app.post('/booking/medic/getTodayBookingHours', (req, res) => bookingController.getTodayBookings(req, res));
+    app.post('/booking/medic/getWeekBookingHours', (req, res) => bookingController.getWeekBookings(req, res));
+    app.post('/booking/medic/getAllBookingHours', (req, res) => bookingController.getAllBookings(req, res));
+
+
     app.get('/test/booking', (req,res) => bookingController.getAll(req,res));
 
     app.post("/booking/patient", (req, res) => bookingController.getById_patient(req, res));

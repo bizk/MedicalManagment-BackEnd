@@ -9,7 +9,7 @@ const {
     Sequelize,
     Op
 } = require("sequelize");
-// var moment = require('moment');
+const moment = require('moment');
 
 module.exports = {
     getAll(req, res) {
@@ -51,140 +51,108 @@ module.exports = {
             .catch(e => console.log(e));
     },
 
+
+    //Me queda ver esto de chequear que no se creen dos en la misma hora el mismo dia
     async create(req, res) {
-        try {
-            MedicWorkHours.findAll({
-                    where: {
-                        personId: req.body.medicId,
-                        day: req.body.day,
-                        [Op.or]: [{
-                            startHour: {
-                                [Op.gte]: req.body.time_start,
-                                [Op.lt]: req.body.time_end,
-                            }
-                        }, {
-                            finishHour: {
-                                [Op.gt]: req.body.time_start,
-                                [Op.lte]: req.body.time_end,
-                            }
-                        }]
+        try { 
+            Booking.findAll({where: {
+                day: req.body.day,
+                [Op.or]: [{
+                    time_end: {
+                        [Op.gt]: req.body.time_start,
+                        [Op.lte]: req.body.time_end,
                     }
-                })
-                .then(async medwrkhr => {
-                    if (medwrkhr.length === 0) {
-                        try {
-                            let startHour = req.body.time_start.split(":");
-                            let hours = parseInt(startHour[0]);
-                            let minutes = parseInt(startHour[1]);
-
-                            let endTime = req.body.time_end.split(":");
-                            let endHours = parseInt(endTime[0]);
-                            let endMinutes = parseInt(endTime[1]);
-
-                            let auxStartHour = hours * 100 + minutes;
-                            let auxEndHour = endHours * 100 + endMinutes;
-
-                            let medic = People.findOne({
-                                where: {
-                                    id: req.body.medicId
-                                }
-                            });
-                            let speciality = Specialities.findOne({
-                                where: {
-                                    specialityid: req.body.specialityId
-                                }
-                            })
-
-                            let medWorkHs;
-                            MedicWorkHours.create({
-                                    day: req.body.day,
-                                    startHour: req.body.time_start,
-                                    finishHour: req.body.time_end
-                                }).then(wk => {
-                                    medWorkHs = wk;
-                                    createWorkHs(wk, medic, speciality);
-                                })
-                                .catch(e => res.status(400).send("Error al crear el horairo"));
-                            let toTime = "";
-                            let fromTime = "";
-
-                            for (auxStartHour = hours * 100 + minutes; auxStartHour <= auxEndHour; minutes += 30) {
-                                if (minutes === 0) {
-                                    fromTime = "" + hours.toString() + ":00:00";
-                                    toTime = "" + hours.toString() + ":30:00";
-                                } else if (minutes < 60) {
-                                    fromTime = "" + hours.toString() + ":30:00";
-                                    toTime = "" + (hours + 1).toString() + ":00:00";
-                                } else {
-                                    minutes = 0;
-                                    hours += 1;
-                                    fromTime = "" + hours.toString() + ":00:00";
-                                    toTime = "" + hours.toString() + ":30:00";
-                                }
-                                auxStartHour = hours * 100 + minutes;
-                                if (auxStartHour >= auxEndHour) break;
-                                Booking.create({
-                                    status: "",
-                                    day: req.body.day,
-                                    time_start: fromTime,
-                                    time_end: toTime
-                                }).then(b => {
-                                    Sequelize.Promise.all([b, medic, speciality, medWorkHs]).spread((Booking, Medic, Speciality, MedicWorkHs) => {
-                                        Booking.setMedic(Medic);
-                                        Booking.setSpeciality(Speciality);
-                                        MedicWorkHs.addBookings(Booking);
-                                    });
-                                }).catch(e => {
-                                    console.log(e), res.status(400).send()
-                                })
-
-                            }
-                        } catch (error) {
-                            console.log(error);
+                }, {
+                    time_start: {
+                        [Op.gte]: req.body.time_start,
+                        [Op.lt]: req.body.time_end
+                    }
+                }
+                ]
+            }})
+            .then(async bk => {
+                if (bk.length === 0) {
+                    let startHour = req.body.time_start.split(":");
+                    let hours = parseInt(startHour[0]);
+                    let minutes = parseInt(startHour[1]);
+        
+                    let endTime = req.body.time_end.split(":");
+                    let endHours = parseInt(endTime[0]);
+                    let endMinutes = parseInt(endTime[1]);
+        
+                    let auxStartHour = hours * 100 + minutes;
+                    let auxEndHour = endHours * 100 + endMinutes;
+        
+                    let medic = People.findOne({ where: { id: req.body.medicId }});
+                    let speciality = Specialities.findOne({ where: { specialityid: req.body.specialityId } })
+        
+                    let toTime = "";
+                    let fromTime = "";
+        
+                    for (auxStartHour = hours * 100 + minutes; auxStartHour <= auxEndHour; minutes += 30) {
+                        if (minutes === 0) {
+                            fromTime = "" + hours.toString() + ":00:00";
+                            toTime = "" + hours.toString() + ":30:00";
+                        } else if (minutes < 60) {
+                            fromTime = "" + hours.toString() + ":30:00";
+                            toTime = "" + (hours + 1).toString() + ":00:00";
+                        } else {
+                            minutes = 0;
+                            hours += 1;
+                            fromTime = "" + hours.toString() + ":00:00";
+                            toTime = "" + hours.toString() + ":30:00";
                         }
-
-                        res.status(200).send({
-                            message: "Operacion Exitosa"
-                        });
-                    } else {
-                        res.status(300).send({
-                            message: "Existen turnos entre medio"
+                        auxStartHour = hours * 100 + minutes;
+                        if (auxStartHour >= auxEndHour) break;
+                        Booking.create({
+                            status: "",
+                            day: req.body.day,
+                            time_start: fromTime,
+                            time_end: toTime
+                        }).then(b => {
+                            Sequelize.Promise.all([b, medic, speciality]).spread((Booking, Medic, Speciality) => {
+                                Booking.setMedic(Medic);
+                                Booking.setSpeciality(Speciality);
+                            })
+                        }).then(r => res.status(200).send(r))
+                        .catch(e => {
+                            console.log(e);
+                            res.status(400).send();
                         })
                     }
-                })
-                .catch(e => {
-                    console.log(e);
-                    res.status(400).send("Algo paso");
-                });
+                    res.status(200).send({ message: "Operacion Exitosa"})
+                } else {
+                    res.status(300).send(bk);
+                }
+            })
+            .catch(e => {
+                console.log(e)
+                res.status(400).send({ message: "Error" })
+            })
         } catch (error) {
-            res.status(400).send("Something went wrong")
-        }
-
-        function createWorkHs(wkhs, med, spec) {
-            Sequelize.Promise.all([wkhs, med, spec]).spread((WkHs, Medic, Spec) => {
-                Medic.addMedicWorkingHours(WkHs);
-                Spec.addMedicWorkingHours(WkHs);
-            }).catch(e => console.log(e));
+            res.status(400).send({ message: "Error" })
         }
     },
 
     async getWorkHours(req, res) {
         try {
-            MedicWorkHours.findAll({ 
-                where: { personId: req.body.medicId },
-                include: [{
-                    model: Booking,
+            MedicWorkHours.findAll({
+                    where: {
+                        personId: req.body.medicId
+                    },
                     include: [{
-                        model: People,
-                        as: 'patient'
-                    }],
-                    as: 'bookings'
-                },
-                {
-                    model: Specialities,
-                }
-            ]
-            })
+                            model: Booking,
+                            include: [{
+                                model: People,
+                                as: 'patient'
+                            }],
+                            as: 'bookings'
+                        },
+                        {
+                            model: Specialities,
+                        }
+                    ]
+                })
                 .then(data => res.status(200).send(data))
                 .catch(e => {
                     console.log(e);
