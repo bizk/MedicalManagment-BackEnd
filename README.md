@@ -2,8 +2,6 @@
 Esta aplicaciond e backend consiste en una aplicacion para la gestion de turnos, medicos y usuarios de un centro medico.
 **Autor:** [Yanzon, Carlos Santiago](https://www.linkedin.com/in/carlos-santiago-yanzon/)
 
-[========]
-
 ## Resumen
 Esta aplicacion fue desarrollada para la materia **Aplicaciones Distribuidas** de la carrera **Ingenieria Informatica** en la **Universidad Argentina De la Empresa - UADE**
 
