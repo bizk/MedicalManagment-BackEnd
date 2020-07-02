@@ -7,18 +7,37 @@ const maxHour = moment().add(12,'h').format("YYYY-MM-DD kk:mm:ss");
 const minHour = moment().add(1, 'h').format("YYYY-MM-DD kk:mm:ss");
             
 module.exports = {
-    createBooking(req, res) {
-        let patient = People.findOne({where: {id: req.body.id}});
-        Booking.update({status: "reservado"},{ where:{ bookingId: req.body.bookingId }})
-        
-        Booking.findOne({where:{ bookingId: req.body.bookingId }})
-        .then(booking => {
-            Sequelize.Promise.all([booking, patient]).spread((Booking, Patient) => {
-                Booking.setPatient(Patient);
-            });
-        })
-        .then(result => res.status(200).send({message: "Turno agendado con exito!"}))
-        .catch(e => {console.log(e), res.status(400).send()})
+    async createBooking(req, res) {
+        try {
+            let booking = await Booking.findOne({where:{ bookingId: req.body.bookingId }});
+            Booking.findAll({
+                where: {
+                    day: booking.day,
+                    patientId: req.body.id,
+                    time_start: booking.time_start
+                }
+            })
+            .then(async bk => {
+                if (bk.length === 0) {
+                    Booking.update({status: "reservado"},{where:{ bookingId: req.body.bookingId }})
+                    Booking.findOne({where: {bookingId: req.body.bookingId}})    
+                    .then(b => {
+                        People.findOne({where: {id: req.body.id}}).then(patient =>
+                            {
+                                console.log(patient)
+                                console.log(b)
+                                Sequelize.Promise.all([b, patient]).spread((Booking, Patient) => {
+                                    Booking.setPatient(Patient);
+                                })
+                            }
+                        )
+                    })
+                    .then(res.status(200).send({message: "Turno agendado con exito!"}))
+                    .catch(e => {console.log(e), res.status(400).send()})
+                } else res.status(300).send({message: "Existen turnos en este horario"})
+            })
+                       
+        } catch (error) { res.status(400).end() }; 
     },
 
     getTurnos_specialityDay_days(req, res) {
