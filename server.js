@@ -31,13 +31,14 @@ require("./api/routes/WaitList.Routes")(app);
 
 const db = require("./api/models");
 
-db.sequelize.sync({ force: false }).then(() => {
+let forceSync = true;
+db.sequelize.sync({ force: forceSync }).then(() => {
     console.log("Drop and re-sync db.");
   }).then(() => {
-    // var test = require('./api/test/SampleTestData');
-    // if (test.createSampleData()) {
-    //   test.createSampleData();
-    // }
+    var test = require('./api/test/SampleTestData');
+    if (forceSync) {
+      test.createSampleData();
+    }
   });
   
 var server = app.listen(port, function() {

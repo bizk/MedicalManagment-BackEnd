@@ -21,13 +21,12 @@ tags:
     description: "Operaciones relacionadas a los turnos"
   - name: "People"
     description: "Informacion relacionada a los uuarios (por seguridad se manienen separadas)"
-  - name: "Horario"
-    description: "Informacion relacionada a los horarios de los medicos"
+  - name: "Lista de espera"
+    description: "Informacion relacionada a la lista de espera"
 schemes:
   - "http"
 
 paths:
-
   /booking/patient:
     post:
       tags:
@@ -104,12 +103,19 @@ paths:
         - "application/xml"
         - "application/json"
       parameters:
-        - in: "body"
-          name: "body"
-          description: "Posee la informacion necesaria para poder crear un turno."
+        - name: "body"
+          in: "body"
+          description: "Id del turno."
           required: true
           schema:
-            $ref: "#/definitions/Turno"
+            type: "object"
+            properties:
+              bookingId:
+                type: "integer"
+                example: "1"
+              id:
+                type: "integer"
+                example: "1"
       responses:
         "200":
           description: "Se crea el turno con exito."
@@ -188,6 +194,8 @@ paths:
               message:
                 type: "string"
                 example: "No se puede confirmar un turno una hora antes"
+        "400":
+          description: "El turno no poudo ser confirmado"
   /booking/cancelBooking:
     put:
       tags:
@@ -259,6 +267,202 @@ paths:
               $ref: "#/definitions/Turno"
         "400":
           description: "Error al obtener los turnos"
+  /booking/getDays:
+    post:
+      tags:
+        - "Turno"
+      summary: "Obtener dias disponibles de una espeicalidad"
+      description: "Nos devuele todos los dias de turnos para una especialidad determinada"
+      operationId: "getDates_bySpec"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Id de medico para obtener turnos."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              specialityId:
+                type: "string"
+                example: "3"
+      responses:
+        "200":
+          description: "Operacion Exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Turno"        
+        "400":
+          description: "Error al obtener los turnos"
+  /booking/getMedics:
+    post:
+      tags:
+        - "Turno"
+      summary: "Obtener dias disponibles de una espeicalidad"
+      description: "Nos devuele todos los dias de turnos para una especialidad determinada"
+      operationId: "getDates_bySpec"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Id de medico para obtener turnos."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              specialityId:
+                type: "string"
+                example: "3"
+              day:
+                type: "string"
+                example: "2020-07-02"
+      responses:
+        "200":
+          description: "Operacion Exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Turno"
+        "400":
+          description: "Error al obtener los turnos"
+  /booking/getHours:
+    post:
+      tags:
+        - "Turno"
+      summary: "Devuelve todas las horas disponibles"
+      description: "Nos devuele todos los horas para una especialidad, dia y medico"
+      operationId: "getHours_byData"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Id de especialidad, dia y ID del medico para agendar turno."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              specialityId:
+                type: "string"
+                example: "3"
+              day:
+                type: "string"
+                example: "2020-07-02"
+              medicId:
+                type: "string"
+                example: "3"
+      responses:
+        "200":
+          description: "Operacion Exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Turno"
+        "400":
+          description: "Error al obtener los turnos"
+  /booking/medic/getTodayBookingHours:
+    post:
+      tags:
+        - "Turno"
+      summary: "Devuelve todas los turnos del dia"
+      operationId: "getTodayBookings"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Id del medico."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              id:
+                type: "string"
+                example: "1"
+      responses:
+        "200":
+          description: "Operacion Exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Turno"
+        "400":
+          description: "Error al obtener los turnos"
+  /booking/medic/getTodayBookingHours:
+    post:
+      tags:
+        - "Turno"
+      summary: "Devuelve todas los turnos del dia"
+      operationId: "getTodayBookings"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Id del medico."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              id:
+                type: "string"
+                example: "1"
+      responses:
+        "200":
+          description: "Operacion Exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Turno"
+        "400":
+          description: "Error al obtener los turnos"
+
+  /waitList:
+    put:
+      tags:
+        - "Lista de espera"
+      summary: "Agrega un paciente a una lista de espera"
+      operationId: "addWaitList"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Id del paciente y de la especialidad."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              speciality:
+                type: "string"
+                example: "3"
+              id:
+                type: "string"
+                example: "1"
+      responses:
+        "200":
+          description: "El paciente fue agregado a la lista de espera de dicha especialdiad"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Turno"
+        "400":
+          description: "Error al obtener los turnos"
 
   /users:
     post:
@@ -274,7 +478,7 @@ paths:
       parameters:
         - name: "body"
           in: "body"
-          description: "Id del turno."
+          description: "Correo y contrasena."
           required: true
           schema:
             type: "object"
@@ -336,37 +540,36 @@ paths:
         "400":
           description: "Error al crear usuario"
 
-  # /speciality/medics:
-  #   post:
-  #     tags:
-  #       - "Especialidad"
-  #     summary: "Medicos de una especialidad"
-  #     description: "Nos devuele todos los medicos de una especialidad dada"
-  #     operationId: "getAllMedicsEspecialities"
-  #     consumes:
-  #       - "application/json"
-  #     produces:
-  #       - "application/json"
-  #     parameters:
-  #       - name: "body"
-  #         in: "body"
-  #         description: "Especialidad a buscar."
-  #         required: true
-  #         schema:
-  #           type: "object"
-  #           properties:
-  #             speciality:
-  #               type: "string"
-  #               example: "2"
-  #     responses:
-  #       "200":
-  #         description: "Operacion exitosa"
-  #         schema:
-  #           type: "object"
-  #           $ref: "#/definitions/Speciality"
-  #       "400":
-  #         description: "Error al obtener las especialidades/medicos"
-  /test/speciality:
+  /speciality/medics:
+    post:
+      tags:
+        - "Especialidad"
+      summary: "Especialidad de un medico"
+      operationId: "getAllSpecialities"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Especialidad a buscar."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              medicId:
+                type: "string"
+                example: "3"
+      responses:
+        "200":
+          description: "Operacion exitosa - Devuelve informacion sobre la especialidad y los medicos"
+          schema:
+            type: "object"
+            $ref: "#/definitions/Speciality"
+        "400":
+          description: "Error al obtener las especialidades/medicos"
+  /speciality:
     get:
       tags:
         - "Especialidad"
@@ -379,7 +582,7 @@ paths:
         - "application/json"
       responses:
         "200":
-          description: "Operacion exitosa"
+          description: "Operacion exitosa - Nos devuelve todas las especialidades y sus tipos."
           schema:
             type: "object"
             $ref: "#/definitions/Speciality"
@@ -449,33 +652,13 @@ paths:
 
       deprecated: false
 
-  /test/medWorkHs:
-    get:
-      tags:
-        - "Horario"
-      summary: "Get all Horarios"
-      description: "Nos devuele todos los horarios de los medicos"
-      operationId: "getAllMedicWorkHs"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      responses:
-        "200":
-          description: "Operacion exitosa"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Horario"
-        "400":
-          description: "Error al obtener las personas"
   /medWorkHs:
     post:
       tags:
-        - "Horario"
-      summary: "Crear Horario"
-      description: "Crea un horario"
-      operationId: "createWorkHour"
+        - "Turno"
+      summary: "Crear turnos en un horario"
+      description: "Crea un conjunto de turnos para un horario"
+      operationId: "createBookingss"
       consumes:
         - "application/json"
       produces:
@@ -486,23 +669,34 @@ paths:
           description: "Posee la informacion necesaria para poder crear un horario."
           required: true
           schema:
-            $ref: "#/definitions/Horario"
+            type: "object"
+            properties:
+              medicId:
+                type: "string"
+                example: "3"
+              day:
+                type: "string"
+                example: "2020-08-13"
+              time_start:
+                type: "string"
+                example: "08:00:00"
+              time_end:
+                type: "string"
+                example: "09:00:00"
+              specialityId:
+                type: "string"
+                example: "1"
       responses:
         "200":
-          description: "Horario Creado"
+          description: "Los turnos en dicho horario fueron creados"
         "300":
-          description: "No existe el medico"
-        "301":
-          description: "No existe la especialidad"
-        "302":
-          description: "Conflicto coon otros horarios"
+          description: "Entre las horas del horario existen existen turnos"
         "400":
           description: "Error al crear horario"
-
   /medWorkHs/getWorkHours_specDate:
     post:
       tags:
-        - "Horario"
+        - "Turno"
       summary: "Get horarios en torno a dia y especialidad"
       description: "Nos devuele todos los horarios de todos los medicos para un dia especifico y una especialidad"
       operationId: "getAllMedicWorkHsSpecDay"
@@ -524,43 +718,6 @@ paths:
               speciality:
                 type: "string"
                 example: "2"
-      responses:
-        "200":
-          description: "Operacion exitosa"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Horario"
-        "400":
-          description: "Error al obtener los horarios por fecha"
-  /medWorkHs/getWorkHours_specDate_Medic:
-    post:
-      tags:
-        - "Horario"
-      summary: "Get horarios en torno a dia y especialidad"
-      description: "Nos devuele todos los horarios de todos los medicos para un dia especifico y una especialidad"
-      operationId: "getAllMedicWorkHsSpecDay"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Informacion necesaria para poder buscar horarios."
-          required: true
-          schema:
-            type: "object"
-            properties:
-              date:
-                type: "string"
-                example: "2020-6-23"
-              speciality:
-                type: "string"
-                example: "2"
-              medicId:
-                type: "string"
-                example: "m-2"
       responses:
         "200":
           description: "Operacion exitosa"
@@ -580,7 +737,7 @@ definitions:
     properties:
       mail:
         type: "string"
-        example: "randomEmail@mail.com"
+        example: "paciente1"
       password:
         type: "string"
         example: "abc123"

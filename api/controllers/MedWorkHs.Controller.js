@@ -57,6 +57,7 @@ module.exports = {
         try { 
             Booking.findAll({where: {
                 day: req.body.day,
+                medicId: req.body.medicId,
                 [Op.or]: [{
                     time_end: {
                         [Op.gt]: req.body.time_start,
