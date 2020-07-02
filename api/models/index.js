@@ -29,7 +29,7 @@ var Role = require('./Role.Model.js') (sequelize, Sequelize);
 People.belongsTo(Role);
 Role.hasMany(People);
 
-var Specialities = require('./speciality.model')(sequelize, Sequelize);
+var Specialities = require('./Speciality.model')(sequelize, Sequelize);
 
 var MedicSpeciality = require('./MedicSpecialitys')(sequelize,Sequelize);
 People.belongsToMany(Specialities, {through: MedicSpeciality,as: 'specialities'});
