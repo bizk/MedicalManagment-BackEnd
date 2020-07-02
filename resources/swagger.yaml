@@ -645,6 +645,48 @@ paths:
         "400":
           description: "Error al obtener las especialidades"
 
+  /people:
+    post:
+      tags:
+        - "People"
+      summary: "Crear una persona para un usuario"
+      description: "Nos permite crear una persona con un rol separada del usuario por cuestiones de seguridad"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Informacion necesaria para crear una persona."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              userUUID:
+                type: "string"
+                example: "p-3"
+              name:
+                type: "string"
+                example: "Carlos Santiago"
+              sureName:
+                type: "string"
+                example: "Yanzon"
+              dateOfBirth:
+                type: "string"
+                example: "2020-07-02"
+              dni:
+                type: "string"
+                example: "1089992"
+      responses:
+        "200":
+          description: "Operacion exitosa"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/People"
+        "400":
+          description: "Error al obtener las personas"
   /test/people:
     get:
       tags:

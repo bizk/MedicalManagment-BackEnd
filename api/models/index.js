@@ -1,7 +1,9 @@
 require('dotenv').config()
-const dbConfig = require('../config/db.config.js');
+//Dotenv carga el archivo .env del enviroment con la informacion sensible
 
 const Sequelize = require('sequelize');
+
+//Configuramos la base de datos
 global.sequelize = new Sequelize(process.env.DB, process.env.USER, process.env.PASSWORD, {
     host: process.env.HOST,
     dialect: process.env.DIALECT,
@@ -18,6 +20,7 @@ const db = {};
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
+//Traemos los modelos y creamos las relaciones
 var User = require('./User.js')(sequelize, Sequelize);
 var People = require('./People.model.js') (sequelize,Sequelize);
 
@@ -58,6 +61,7 @@ People.belongsToMany(WaitList, {through: WaitListPatient, as: 'waitList'});
 Specialities.hasOne(WaitList);
 WaitList.belongsTo(Specialities, {as: "speciality"});
 
+//Definimos en la base de datos los modelos
 db.User = User;
 db.People = People;
 db.Specialities = Specialities;

@@ -10,7 +10,9 @@ module.exports = {
             dateOfBirth: req.body.dateOfBirth,
             dni: req.body.dni,
         })
-        .then(data => {console.log(data); res.status(200).send(data)})
+        .then(data => {
+            res.status(200).send(data)
+        })
         .catch(e => res.status(500));
     },
 
