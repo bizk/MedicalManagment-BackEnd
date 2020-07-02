@@ -1,5 +1,4 @@
 const {
-    MedicWorkHours,
     Booking,
     People,
     Specialities,
@@ -146,39 +145,5 @@ module.exports = {
         } catch (error) {
             res.status(400).send("Something went wrong")
         }
-
-        function createWorkHs(wkhs, med, spec) {
-            Sequelize.Promise.all([wkhs, med, spec]).spread((WkHs, Medic, Spec) => {
-                Medic.addMedicWorkingHours(WkHs);
-                Spec.addMedicWorkingHours(WkHs);
-            }).catch(e => console.log(e));
-        }
     },
-
-    async getWorkHours(req, res) {
-        try {
-            MedicWorkHours.findAll({ 
-                where: { personId: req.body.medicId },
-                include: [{
-                    model: Booking,
-                    include: [{
-                        model: People,
-                        as: 'patient'
-                    }],
-                    as: 'bookings'
-                },
-                {
-                    model: Specialities,
-                }
-            ]
-            })
-                .then(data => res.status(200).send(data))
-                .catch(e => {
-                    console.log(e);
-                    res.status(400).send("Error al obtener los horarios por fecha")
-                });
-        } catch (error) {
-            res.status(400).send("Can`t get the work hours. ")
-        };
-    }
 }

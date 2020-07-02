@@ -16,7 +16,6 @@ module.exports = (app) => {
     app.post('/booking/medic/getWeekBookingHours', (req, res) => bookingController.getWeekBookings(req, res));
     app.post('/booking/medic/getAllBookingHours', (req, res) => bookingController.getAllBookings(req, res));
 
-
     app.get('/test/booking', (req,res) => bookingController.getAll(req,res));
 
     app.post("/booking/patient", (req, res) => bookingController.getById_patient(req, res));

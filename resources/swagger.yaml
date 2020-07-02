@@ -544,7 +544,8 @@ paths:
     post:
       tags:
         - "Especialidad"
-      summary: "Especialidad de un medico"
+      summary: "Especialidades de un medico"
+      description: "Nos devuelve todas las especialidades de un medico"
       operationId: "getAllSpecialities"
       consumes:
         - "application/json"
@@ -570,6 +571,61 @@ paths:
         "400":
           description: "Error al obtener las especialidades/medicos"
   /speciality:
+    post:
+      tags:
+        - "Especialidad"
+      summary: "Crea una especialidad y su lista de espera"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Pasamos el nombre de la especialidad a crear."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              type:
+                type: "string"
+                example: "Ontologia"
+      responses:
+        "200":
+          description: "Operacion exitosa - Se creo la especialdidad y su lsita de espera."
+        "400":
+          description: "Error al crear la especialidad"
+    put:
+      tags:
+        - "Especialidad"
+      summary: "Agrega una especialidad a un medico"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "body"
+          in: "body"
+          description: "Se envia el id del medico y de la especialidad a vincular."
+          required: true
+          schema:
+            type: "object"
+            properties:
+              medicId:
+                type: "integer"
+                example: 4
+              specialityId:
+                type: "integer"
+                example: 1
+      responses:
+        "200":
+          description: "Operacion exitosa - Se vinculo la especialidad con el medico con exito."
+        "300":
+          description: "Problema al encontrar una especialidad."
+        "301":
+          description: "Problema al encontrar el medico o vincular la especialidad con tal."
+        "400":
+          description: "Error al vincular al medico y la especialidad"
     get:
       tags:
         - "Especialidad"
@@ -890,3 +946,15 @@ definitions:
       role:
         type: "object"
         $ref: "#/definitions/Role" 
+  SpecialityAndMedic:
+    type: "object"
+    properties:
+      specialityId:
+        type: "integer"
+        example: 142
+      type:
+        type: "string"
+        example: "Ontologia"
+      medics:
+        type: "Object"
+        $ref: "#/definitions/People"
