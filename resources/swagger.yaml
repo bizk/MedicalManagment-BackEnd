@@ -10,8 +10,8 @@ info:
   license:
     name: "Apache 2.0"
     url: "http://www.apache.org/licenses/LICENSE-2.0.html"
-host: "medical-managment-backend.herokuapp.com/"
-#basePath: "/v2"
+host: "medical-managment-backend.herokuapp.com"
+basePath: "/v2"
 tags:
   - name: "User"
     description: "Usuarios para login"
@@ -304,7 +304,6 @@ paths:
         - "Turno"
       summary: "Obtener dias disponibles de una espeicalidad"
       description: "Nos devuele todos los dias de turnos para una especialidad determinada"
-      operationId: "getDates_bySpec"
       consumes:
         - "application/json"
       produces:
@@ -399,37 +398,7 @@ paths:
               $ref: "#/definitions/Turno"
         "400":
           description: "Error al obtener los turnos"
-  /booking/medic/getTodayBookingHours:
-    post:
-      tags:
-        - "Turno"
-      summary: "Devuelve todas los turnos del dia"
-      operationId: "getTodayBookings"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - in: "body"
-          name: "body"
-          description: "Id del medico."
-          required: true
-          schema:
-            type: "object"
-            properties:
-              id:
-                type: "string"
-                example: "1"
-      responses:
-        "200":
-          description: "Operacion Exitosa"
-          schema:
-            type: "array"
-            items:
-              $ref: "#/definitions/Turno"
-        "400":
-          description: "Error al obtener los turnos"
-
+          
   /waitList:
     put:
       tags:
@@ -481,14 +450,14 @@ paths:
           description: "Correo y contrasena."
           required: true
           schema:
-            type: "object"
             $ref: "#/definitions/User"
       responses:
         "200":
           description: "Se loggea con exito"
           schema:
-            type: "object"
-            $ref: "#/definitions/Persona"
+            type: "array"
+            items:
+              $ref: "#/definitions/Persona"
         "300":
           description: "Credenciales invalidas"
         "400":
@@ -509,7 +478,8 @@ paths:
           description: "successful operation"
           schema:
             type: array
-            $ref: "#/definitions/User"
+            items:
+              $ref: "#/definitions/User"
         "400":
           description: "Error al obtener los usuarios"
     post:
@@ -529,14 +499,14 @@ paths:
           description: "Id del turno."
           required: true
           schema:
-            type: "object"
             $ref: "#/definitions/User"
       responses:
         "200":
           description: "Se crea con exito"
           schema:
-            type: "object"
-            $ref: "#/definitions/User"
+            type: "array"
+            items:
+              $ref: "#/definitions/User"
         "400":
           description: "Error al crear usuario"
 
@@ -566,7 +536,6 @@ paths:
         "200":
           description: "Operacion exitosa - Devuelve informacion sobre la especialidad y los medicos"
           schema:
-            type: "object"
             $ref: "#/definitions/Speciality"
         "400":
           description: "Error al obtener las especialidades/medicos"
@@ -631,7 +600,6 @@ paths:
         - "Especialidad"
       summary: "get all especialidades"
       description: "Nos devuele todos las especialidades"
-      operationId: "getAll"
       consumes:
         - "application/json"
       produces:
@@ -640,7 +608,6 @@ paths:
         "200":
           description: "Operacion exitosa - Nos devuelve todas las especialidades y sus tipos."
           schema:
-            type: "object"
             $ref: "#/definitions/Speciality"
         "400":
           description: "Error al obtener las especialidades"
@@ -947,10 +914,8 @@ definitions:
         type: "integer"
         example: "1"
       person:
-        type: "object"
-        $ref: "#/definitions/Person"
+        $ref: "#/definitions/Persona"
       speciality:
-        type: "object"
         $ref: "#/definitions/Speciality"
   Role:
     type: "object"
@@ -986,17 +951,4 @@ definitions:
         type: "string"
         example: "2"
       role:
-        type: "object"
         $ref: "#/definitions/Role" 
-  SpecialityAndMedic:
-    type: "object"
-    properties:
-      specialityId:
-        type: "integer"
-        example: 142
-      type:
-        type: "string"
-        example: "Ontologia"
-      medics:
-        type: "Object"
-        $ref: "#/definitions/People"
